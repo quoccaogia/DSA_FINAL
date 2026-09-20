@@ -1,5 +1,5 @@
 const USE_MOCK = true;
-
+//mot nhap cai url cua backend vao
 const API_URL = "https://jsonplaceholder.typicode.com/posts";
 
 const mockDatabase = {
