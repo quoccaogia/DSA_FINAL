@@ -37,4 +37,22 @@ struct Student{
             this->credit = credit;
             this->DRL = DRL;
         }
+        // ========== GETTER ==========
+        string getName() const { return name; }
+        float getGPA4() const { return gpa_4; }
+        float getGPA10() const { return gpa_10; }
+        bool getGender() const { return gender; }
+        string getDateOfBirth() const { return dateOfBirth; }
+        string getMajor() const { return major; }
+        string getMSSV() const { return MSSV; }
+        bool getIsNgu() const { return isNgu; }
+        int getCredit() const { return credit; }
+        int getDRL() const { return DRL; }
+
+        // ========== SETTER (dùng khi phúc khảo) ==========
+        void setGPA4(float g) { gpa_4 = g; }
+        void setGPA10(float g) { gpa_10 = g; }
+        void setDRL(int d) { DRL = d; }
+        void setIsNgu(bool v) { isNgu = v; }
+        void setCredit(int c) { credit = c; }
 };

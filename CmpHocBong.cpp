@@ -1,18 +1,22 @@
-﻿struct StudentComparator {
-    // demo cac tieu chi 
-    bool operator()(const Student& a, const Student& b) const {
+﻿struct CmpHocBong {
+    bool operator()(const Student* a, const Student* b) const {
 
-        // 1. Nếu GPA khác nhau -> Đứa nào GPA lớn hơn thì ưu tiên lên trước
-        if (a.gpa != b.gpa) {
-            return a.gpa > b.gpa;
+        // 1. Ưu tiên GPA hệ 4 giảm dần
+        if (a->getGPA4() != b->getGPA4()) {
+            return a->getGPA4() > b->getGPA4();
         }
 
-        // 2. Trái lại, nếu GPA bằng nhau, xét tới Điểm rèn luyện
-        if (a.renLuyen != b.renLuyen) {
-            return a.renLuyen > b.renLuyen;
+        // 2. Nếu GPA bằng nhau -> Ưu tiên Điểm rèn luyện giảm dần
+        if (a->getDRL() != b->getDRL()) {
+            return a->getDRL() > b->getDRL();
         }
 
-        // 3. Cuối cùng, nếu cả GPA và rèn luyện đều bằng nhau -> Xếp theo MSSV tăng dần (để phân biệt)
-        return a.mssv < b.mssv;
+        // 3. Nếu Điểm rèn luyện bằng nhau -> Ưu tiên Số tín chỉ giảm dần
+        if (a->getCredit() != b->getCredit()) {
+            return a->getCredit() > b->getCredit();
+        }
+
+        // 4. Nếu bằng nhau tất cả -> Sắp xếp theo MSSV tăng dần (để không bị trùng)
+        return a->getMSSV() < b->getMSSV();
     }
 };
