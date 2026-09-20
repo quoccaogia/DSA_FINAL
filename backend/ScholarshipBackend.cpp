@@ -1,7 +1,7 @@
-﻿#include <student.cpp>
+﻿#include "student.cpp"
 #include <unordered_map>
 #include <set>
-#include <CmpHocBong.cpp>
+#include "CmpHocBong.cpp"
 
 class ScholarshipSystem {
 private:
@@ -14,15 +14,31 @@ private:
 public:
     // các hàm...
     Student* get_Student(string mssv){
-        return dshocbong[mssv];
+        auto it = dshocbong.find(mssv);
+
+        if(it == dshocbong.end()){
+            return nullptr;
+        }
+        else{
+            return it->second;
+        }
     }
 
     bool regrade_Req(string mssv){
         //Từ từ chờ fe
+        return true;
     }
 
     bool delete_Student(string mssv){
-        delete dshocbong[mssv];
+        auto it = dshocbong.find(mssv);
+
+        if(it == dshocbong.end()){
+            return false;
+        }
+        else{
+            delete it->second;
+            dshocbong.erase(it);
+        }
     }
 
 };

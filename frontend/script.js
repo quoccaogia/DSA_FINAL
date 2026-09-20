@@ -1,6 +1,6 @@
 const USE_MOCK = true;
 
-const API_URL = "https://jsonplaceholder.typicode.com/posts";
+const API_URL = "http://localhost:8080/api/student";
 
 const mockDatabase = {
   "21110001": {
