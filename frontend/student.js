@@ -26,4 +26,13 @@ searchButton.addEventListener('click', function() {
         console.log("MSSV không hợp lệ");
         return;
     }
+
+    const student = mockDatabase[id];
+    console.log(student);
+    if(!student){
+        console.log("Không tìm thấy sinh viên");
+        return;
+      }
+
+    document.getElementById('result').textContent = student.name;//shit
 });
