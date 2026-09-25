@@ -15,7 +15,7 @@ private:
     string db_name;
 
 public:
-    // 1. Khởi tạo & Mở kết nối Database
+    // 1. Khởi tạo và Mở kết nối Database
     SQLiteHandler(const string& database_path = "scholarship.db") 
         : db_name(database_path), db(nullptr) {
         if (sqlite3_open(db_name.c_str(), &db) != SQLITE_OK) {
@@ -25,7 +25,7 @@ public:
         }
     }
 
-    // 2. Destructor - Tự động đóng kết nối tránh rò rỉ tài nguyên
+    // 2. Destructor tự động đóng kết nối tránh rò rỉ tài nguyên
     ~SQLiteHandler() {
         if (db) {
             sqlite3_close(db);
