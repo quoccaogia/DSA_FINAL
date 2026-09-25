@@ -15,6 +15,10 @@ private:
     set<Student*, CmpHocBong> by_priority;
 
 public:
+    void add_Student(Student* student){
+        dshocbong[student->get_MSSV()] = student;
+    }
+
     // các hàm...
     Student* get_Student(string mssv){
         auto it = dshocbong.find(mssv);

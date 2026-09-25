@@ -79,5 +79,10 @@ int main() {
         {"Access-Control-Allow-Headers", "Content-Type"}
     });
 
+    server.Options("/api/student", [](const httplib::Request& req,
+                                  httplib::Response& res) {
+    res.status = 200;
+    });
+
     server.listen("localhost", 8080);
 }
