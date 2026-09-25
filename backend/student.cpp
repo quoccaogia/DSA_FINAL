@@ -37,4 +37,84 @@ struct Student{
             this->credit = credit;
             this->DRL = DRL;
         }
+
+        //GETTER
+        string get_Name() {
+            return name;
+        }
+
+        float get_GPA4() {
+        return gpa_4;
+        }
+
+        float get_GPA10() {
+        return gpa_10;
+        }
+
+        bool get_Gender() {
+        return gender;
+        }
+
+        string get_DateOfBirth() {
+        return dateOfBirth;
+        }
+
+        string get_Major() {
+        return major;
+        }
+
+        string get_MSSV() {
+        return MSSV;
+        }
+
+        bool get_IsNgu() {
+        return isNgu;
+        }
+
+        int get_Credit() {
+        return credit;
+        }
+
+        int get_DRL() {
+        return DRL;
+        }
+
+
+        //SETTER
+        void set_Name(string value) {
+        name = value;
+        }
+
+        void set_GPA4(float value) {
+            gpa_4 = value;
+        }
+
+        void set_GPA10(float value) {
+            gpa_10 = value;
+        }
+
+        void set_Gender(bool value) {
+            gender = value;
+        }
+
+        void set_DateOfBirth(string value) {
+            dateOfBirth = value;
+        }
+
+        void set_Major(string value) {
+            major = value;
+        }
+
+        void set_IsNgu(bool value) {
+            isNgu = value;
+        }
+
+        void set_Credit(int value) {
+            credit = value;
+        }
+
+        void set_DRL(int value) {
+            DRL = value;
+        }
+
 };
