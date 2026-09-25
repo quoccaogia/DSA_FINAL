@@ -1,20 +1,4 @@
-const USE_MOCK = true;
-
 const API_URL = "http://localhost:8080/api/student";
-
-const mockDatabase = {
-  "21110001": {
-    MSSV: "21110001",
-    name: "Nguyễn Văn A",
-    major: "Công nghệ thông tin",
-    dateOfBirth: "15/08/2003",
-    gender: true,
-    gpa_4: 3.55,
-    gpa_10: 8.85,
-    credit: 120,
-    DRL: 90
-  }
-};
 
 // Chuyển đổi Tab giao diện
 function switchTab(tabId, element) {
@@ -49,7 +33,7 @@ function getValueOrNull(elementId, type = 'string') {
   return val;
 }
 
-// TAB 1: Tra cứu thông tin sinh viên
+// ================================TAB 1: Tra cứu thông tin sinh viên
 async function fetchStudentData() {
   const searchEl = document.getElementById('searchMssv');
   if (!searchEl) return;
@@ -62,34 +46,25 @@ async function fetchStudentData() {
   }
 
   let data;
-
-  if (USE_MOCK) {
-    // Giả lập lấy dữ liệu từ memory
-    data = mockDatabase[mssv] || {
-      MSSV: mssv,
-      name: null,
-      major: null,
-      dateOfBirth: null,
-      gender: null,
-      gpa_4: null,
-      gpa_10: null,
-      credit: null,
-      DRL: null
-    };
-  } else {
     // Gọi API thật từ Backend
-    try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ MSSV: mssv })
-      });
-      if (!response.ok) throw new Error("Không thể lấy dữ liệu.");
-      data = await response.json();
-    } catch (error) {
-      alert("Lỗi kết nối Backend: " + error.message);
-      return;
+  try {
+    const payload = {
+      ACTION: "get_StudentInfo",
+      MSSV: mssv
     }
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) throw new Error("Không thể lấy dữ liệu.");
+    data = await response.json();
+  } 
+    catch (error) {
+    alert("Lỗi kết nối Backend: " + error.message);
+    return;
   }
 
   // Hiển thị bảng kết quả
@@ -113,9 +88,10 @@ async function fetchStudentData() {
   setField('res_drl', data.DRL ?? "Chưa có (null)");
 }
 
-// TAB 2: Gửi cập nhật thông tin sinh viên
+// ===========================TAB 2: Gửi cập nhật thông tin sinh viên
 async function sendStudentUpdate() {
   const payload = {
+    ACTION: "UPDATE_STUDENT",
     MSSV: getValueOrNull('up_mssv', 'string'),
     name: getValueOrNull('up_name', 'string'),
     major: getValueOrNull('up_major', 'string'),
@@ -127,15 +103,7 @@ async function sendStudentUpdate() {
     DRL: getValueOrNull('up_drl', 'int')
   };
 
-  if (USE_MOCK) {
-    alert("[MOCK SUCCESS]\nCập nhật dữ liệu thành công!\n\nPayload JSON đã tạo:\n" + JSON.stringify(payload, null, 2));
-    
-    // Lưu tạm vào bộ nhớ giả lập để test ngay ở Tab 1
-    if (payload.MSSV) {
-      mockDatabase[payload.MSSV] = payload;
-    }
-  } else {
-    try {
+  try {
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -146,5 +114,4 @@ async function sendStudentUpdate() {
     } catch (error) {
       alert("Lỗi khi gửi dữ liệu: " + error.message);
     }
-  }
 }
