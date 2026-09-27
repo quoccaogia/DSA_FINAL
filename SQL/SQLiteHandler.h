@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <sqlite3.h>
-#include "Student.h" // Nhớ include file Student chuẩn của nhóm
+#include "backend/student.cpp" 
 
 using namespace std;
 
@@ -94,7 +94,7 @@ public:
             sqlite3_bind_int(stmt, 5, s->get_Gender() ? 1 : 0);
             sqlite3_bind_text(stmt, 6, s->get_DateOfBirth().c_str(), -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(stmt, 7, s->get_Major().c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_int(stmt, 8, s->get_HasFailedSubject() ? 1 : 0);
+            sqlite3_bind_int(stmt, 8, s->get_IsNgu() ? 1 : 0);
             sqlite3_bind_int(stmt, 9, s->get_Credit());
             sqlite3_bind_int(stmt, 10, s->get_DRL());
 

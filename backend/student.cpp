@@ -39,43 +39,43 @@ struct Student{
         }
 
         //GETTER
-        string get_Name() {
+        string get_Name() const {
             return name;
         }
 
-        float get_GPA4() {
+        float get_GPA4() const {
         return gpa_4;
         }
 
-        float get_GPA10() {
+        float get_GPA10() const {
         return gpa_10;
         }
 
-        bool get_Gender() {
+        bool get_Gender() const {
         return gender;
         }
 
-        string get_DateOfBirth() {
+        string get_DateOfBirth() const {
         return dateOfBirth;
         }
 
-        string get_Major() {
+        string get_Major() const {
         return major;
         }
 
-        string get_MSSV() {
+        string get_MSSV() const {
         return MSSV;
         }
 
-        bool get_IsNgu() {
+        bool get_IsNgu() const {
         return isNgu;
         }
 
-        int get_Credit() {
+        int get_Credit() const {
         return credit;
         }
 
-        int get_DRL() {
+        int get_DRL() const {
         return DRL;
         }
 

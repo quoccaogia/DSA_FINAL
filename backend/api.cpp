@@ -2,17 +2,22 @@
 #include "ScholarshipBackend.cpp"
 #include <string>
 #include <vector>
-
+#include "SQL/SQLiteHandler.h"
 using namespace std;
 
 
 int main() {
-//Staring json processing
     httplib::Server server;
 
-    ScholarshipSystem system;   
+    SQLiteHandler database;
+    ScholarshipSystem system; 
+    
+    for(Student* student : database.loadData()){
+        system.add_Student(student);
+    }
 
-    server.Post("/api/student", [&system /*add whatever outside*/](const httplib::Request& req,
+
+    server.Post("/api/student", [&system, &database /*add whatever outside*/](const httplib::Request& req,
                                    httplib::Response& res) {
 
         // Nhận JSON từ FE
@@ -68,9 +73,25 @@ int main() {
                 res.set_content(responsePayload.dump(), "application/json");
                 return;
             }
+
+            database.saveStudent(system.get_Student(payload["MSSV"].get<string>()));
         }
 
+        else if(action == "DELETE_STUDENT"){
+            bool status = system.delete_Student(payload["MSSV"].get<string>());
+            if(status == true){
+                database.deleteStudent(payload["MSSV"].get<string>());
+            }
+            else{
+                nlohmann::json responsePayload = {
+                    {"success", false},
+                    {"message", "Can't delete student"}
+                };
 
+                res.status = 404;
+                res.set_content(responsePayload.dump(), "application/json");
+            }
+        }
     });
 
     server.set_default_headers({
