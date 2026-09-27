@@ -9,21 +9,24 @@
 class ScholarshipSystem {
 private:
     // 1. Hash Table - tra cứu theo MSSV
-    unordered_map<string, Student*> dshocbong;
-
+    unordered_map<string, Student*> dshocsinh;
+                                                
     // 2. Set - xếp hạng theo nhiều tiêu chí
     set<Student*, CmpHocBong> by_priority;
 
 public:
     void add_Student(Student* student){
-        dshocbong[student->get_MSSV()] = student;
+        dshocsinh[student->get_MSSV()] = student;
+
+        if(student->get_IsNgu() == false){
+            by_priority.insert(student);
+        }
     }
-
-    // các hàm...
+    
     Student* get_Student(string mssv){
-        auto it = dshocbong.find(mssv);
+        auto it = dshocsinh.find(mssv);
 
-        if(it == dshocbong.end()){
+        if(it == dshocsinh.end()){
             return nullptr;
         }
         else{
@@ -31,13 +34,13 @@ public:
         }
     }
 
-    bool update_Student(nlohmann::json& data){
+    bool update_Student(nlohmann::json& data)/*hash*/{
         Student* student = get_Student(data["MSSV"].get<string>());
         if(student == nullptr){
             return false;
         }
 
-         if (!data["name"].is_null())
+        if (!data["name"].is_null())
         student->set_Name(data["name"].get<string>());
 
         if (!data["gpa_4"].is_null())
@@ -64,17 +67,50 @@ public:
         return true;
     }
 
-    bool delete_Student(string mssv){
-        auto it = dshocbong.find(mssv);
+    bool delete_Student(string mssv)/*Xoa ca hash va set*/{
+        auto it = dshocsinh.find(mssv);
 
-        if(it == dshocbong.end()){
+        if(it == dshocsinh.end()){ //O tim thay
             return false;
         }
         else{
-            delete it->second;
-            dshocbong.erase(it);
+            by_priority.erase(it->second); //Xoa set
+            delete it->second;//Xoa object student
+            dshocsinh.erase(it);//Xoa khoi hash
+
             return true;
         }
     }
 
+    vector<Student*> get_TopK(int soLuongCanLay) {
+        vector<Student*> danhSachKetQua;
+        int soLuongDaLay = 0;
+
+        for (auto& entry : dshocsinh) {
+            Student* sinhVien = entry.second;
+
+            if (soLuongDaLay >= soLuongCanLay){
+                break;
+            }
+            
+            danhSachKetQua.push_back(sinhVien);
+            ++soLuongDaLay;
+        }
+
+        return danhSachKetQua;
+    }
+
+    vector<Student*> filter_By_GPA4(float gpaThapNhat, float gpaCaoNhat) {
+        vector<Student*> danhSachKetQua;
+
+        for (auto& entry : dshocsinh) {
+
+            Student* sinhVien = entry.second;
+            
+            if (sinhVien->get_GPA4() >= gpaThapNhat && sinhVien->get_GPA4() <= gpaCaoNhat) {
+                danhSachKetQua.push_back(sinhVien);
+            }
+        }
+        return danhSachKetQua;
+    }
 };
