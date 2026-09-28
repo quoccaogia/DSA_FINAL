@@ -79,7 +79,7 @@ public:
         return students;
     }
 
-    // 5. Thêm mới hoặc Cập nhật sinh viên (Dùng INSERT OR REPLACE cực tiện)
+    // 5. Thêm mới hoặc Cập nhật sinh viên (Dùng INSERT OR REPLACE)
     bool saveStudent(const Student* s) {
         if (!s) return false;
         string sql = "INSERT OR REPLACE INTO sinh_vien (mssv, name, gpa_4, gpa_10, gender, date_of_birth, major, has_failed, credit, drl) "
