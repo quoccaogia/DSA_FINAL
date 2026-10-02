@@ -10,6 +10,7 @@ struct Student{
         bool gender; //true = nam, false = nữ
         string dateOfBirth; // string d/month/year sepparator bằng dấu "/"
         string major; //Tên ngành
+        string cohort; // Tên khóa 
         string MSSV; //MSSV, "aabbbccc". a = niên khóa, b = ngành, c = stt
         bool isNgu; //trong kỳ có rớt môn ko? 
         int credit; //Số tính chỉ
@@ -23,7 +24,8 @@ struct Student{
                 string dateOfBirth, // string d/month/year sepparator bằng dấu "/"
                 string major, //Tên ngành
                 string MSSV, //MSSV, "aabbbccc". a = niên khóa, b = ngành, c = stt
-                bool isNgu, //trong kỳ có rớt môn ko? 
+                bool isNgu,//trong kỳ có rớt môn ko? 
+                string cohort, // tên khóa 
                 int credit, //Số tính chỉ
                 int DRL){
             this->name = name;
@@ -32,6 +34,7 @@ struct Student{
             this->gender = gender;
             this->dateOfBirth = dateOfBirth;
             this->major = major;
+			this->cohort = cohort;  
             this->MSSV = MSSV;
             this->isNgu = isNgu;
             this->credit = credit;
@@ -58,7 +61,10 @@ struct Student{
         string get_DateOfBirth() const {
         return dateOfBirth;
         }
-
+        
+        string get_Cohort() const {
+        return cohort;
+        }   
         string get_Major() const {
         return major;
         }
@@ -103,6 +109,9 @@ struct Student{
 
         void set_Major(string value) {
             major = value;
+        }
+        void setCohort(const string& value) {
+            cohort = value;
         }
 
         void set_IsNgu(bool value) {
