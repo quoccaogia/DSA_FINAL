@@ -178,6 +178,24 @@
         <tr><th>GPA Hệ 10</th><td id="res_gpa10">-</td></tr>
         <tr><th>Số Tín Chỉ</th><td id="res_credit">-</td></tr>
         <tr><th>Điểm Rèn Luyện (ĐRL)</th><td id="res_drl">-</td></tr>
+
+        <tr><th>Top % toàn trường</th><td id="res_topAll">-</td></tr>
+        <tr><th>Top % theo ngành/khóa</th><td id="res_topGroup">-</td></tr>
+
+
+        <div class="card" id="topkGroupCard" style="display: none;">
+        <h2 id="topkGroupTitle">Top học bổng theo ngành/khóa</h2>
+        <table class="info-table">
+          <thead>
+            <tr>
+              <th>Hạng</th><th>MSSV</th><th>Họ và Tên</th><th>Ngành</th>
+              <th>GPA 4</th><th>GPA 10</th><th>ĐRL</th>
+            </tr>
+          </thead>
+          <tbody id="topkGroupBody"></tbody>
+        </table>
+      </div>
+
       </table>
     </div>
   </div>
@@ -255,11 +273,29 @@
       <button class="btn-submit" onclick="importCSV()">Nhập CSV</button>
     </div>
 
-
   </div>
-<!-- All your HTML cards and tabs here... -->
 
- 
+  
+
+  <div id="topk-section">
+  <div class="card">
+    <h2>Top học bổng toàn trường</h2>
+    <table class="info-table">
+      <thead>
+        <tr>
+          <th>Hạng</th><th>MSSV</th><th>Họ và Tên</th><th>Ngành</th>
+          <th>GPA 4</th><th>GPA 10</th><th>ĐRL</th>
+        </tr>
+      </thead>
+      <tbody id="topkBody">
+        <tr><td colspan="7">Đang tải...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+  </div>
+
+  
   <script src="script.js"></script>
 </body>
 </html>

@@ -63,8 +63,8 @@ async function fetchStudentData() {
     data = await response.json();
   } 
     catch (error) {
-    alert("Lỗi kết nối Backend: " + error.message);
-    return;
+     alert("Lỗi kết nối Backend: " + error.message);
+  
   }
 
   // Hiển thị bảng kết quả
@@ -86,6 +86,17 @@ async function fetchStudentData() {
   setField('res_gpa10', data.gpa_10 ?? "Chưa có (null)");
   setField('res_credit', data.credit ?? "Chưa có (null)");
   setField('res_drl', data.DRL ?? "Chưa có (null)");
+
+  const showPercent = (p) => {
+  if (p === undefined || p === null) return "Chưa có (null)";
+  if (p < 0) return "Không đủ điều kiện";
+  return "Top " + p.toFixed(1) + "%";
+};
+setField('res_topAll', showPercent(data.topPercentAllSchool));
+setField('res_topGroup', showPercent(data.topPercentGroup));
+
+fetchTopKGroup(data.major, data.cohort);
+
 }
 
 // ===========================TAB 2: Gửi cập nhật thông tin sinh viên
@@ -132,10 +143,10 @@ async function importCSV() {
   const headers = lines[0].trim().split(",");
 
   // Kiểu dữ liệu của từng cột (giống sendStudentUpdate)
-  const types = {
-    credit: 'int', DRL: 'int',
+    const types = {
+    credit: 'int', drl: 'int',
     gpa_4: 'float', gpa_10: 'float',
-    gender: 'bool'
+    gender: 'bool', has_failed: 'bool'
   };
 
   const students = [];
@@ -150,11 +161,7 @@ async function importCSV() {
     for (let j = 0; j < headers.length; j++) {
       const key = headers[j].trim();
       const raw = (values[j] ?? "").trim();
-      const type = {
-        credit: 'int', drl: 'int',
-        gpa_4: 'float', gpa_10: 'float',
-        gender: 'bool', has_failed: 'bool'
-      }
+            const type = types[key];
 
       if (raw === "") {
         student[key] = null;
@@ -192,4 +199,131 @@ async function importCSV() {
   } catch (error) {
     alert("Lỗi khi gửi dữ liệu: " + error.message);
   }
+
+
+ }
+
+// ===========================Top học bổng (tự tải khi mở trang)
+async function fetchTopK() {
+  const body = document.getElementById('topkBody');
+  if (!body) return;
+
+  const showMessage = (msg) => {
+    body.innerHTML = "";
+    const cell = body.insertRow().insertCell();
+    cell.colSpan = 7;
+    cell.textContent = msg;
+  };
+
+  const payload = {
+    ACTION: "GET_TOP_K"
+  };
+
+  let data;
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw new Error();
+    data = await response.json();
+  } catch (error) {
+    showMessage("Chưa kết nối được Backend.");
+    return;
+  }
+
+  const list = Array.isArray(data) ? data : (data.students ?? []);
+  if (list.length === 0) {
+    showMessage("Chưa có sinh viên nào.");
+    return;
+  }
+
+  body.innerHTML = "";
+  list.forEach((sv, index) => {
+    const row = body.insertRow();
+    const values = [
+      index + 1,
+      sv.MSSV ?? sv.mssv,
+      sv.name,
+      sv.major,
+      sv.gpa_4,
+      sv.gpa_10,
+      sv.DRL ?? sv.drl
+    ];
+    values.forEach(v => {
+      row.insertCell().textContent = v ?? "-";
+    });
+  });
+}
+
+// Tự chạy khi mở trang
+fetchTopK();
+
+// ===========================Top học bổng theo ngành/khóa (hiện sau khi tra cứu)
+async function fetchTopKGroup(major, cohort) {
+  const card = document.getElementById('topkGroupCard');
+  const body = document.getElementById('topkGroupBody');
+  const title = document.getElementById('topkGroupTitle');
+  if (!card || !body) return;
+
+  card.style.display = 'block';
+  if (title) title.textContent = "Top học bổng ngành " + (major ?? "?") + " - khóa " + (cohort ?? "?");
+
+  const showMessage = (msg) => {
+    body.innerHTML = "";
+    const cell = body.insertRow().insertCell();
+    cell.colSpan = 7;
+    cell.textContent = msg;
+  };
+
+  if (!major || !cohort) {
+    showMessage("Chưa có thông tin ngành/khóa của sinh viên.");
+    return;
+  }
+
+  showMessage("Đang tải...");
+
+  const payload = {
+    ACTION: "GET_TOP_K",
+    major: major,
+    cohort: cohort
+  };
+
+  let data;
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw new Error();
+    data = await response.json();
+  } catch (error) {
+    showMessage("Chưa kết nối được Backend.");
+    return;
+  }
+
+  const list = Array.isArray(data) ? data : (data.students ?? []);
+  if (list.length === 0) {
+    showMessage("Chưa có sinh viên nào.");
+    return;
+  }
+
+  body.innerHTML = "";
+  list.forEach((sv, index) => {
+    const row = body.insertRow();
+    const values = [
+      index + 1,
+      sv.MSSV ?? sv.mssv,
+      sv.name,
+      sv.major,
+      sv.gpa_4,
+      sv.gpa_10,
+      sv.DRL ?? sv.drl
+    ];
+    values.forEach(v => {
+      row.insertCell().textContent = v ?? "-";
+    });
+  });
 }
