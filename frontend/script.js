@@ -221,6 +221,7 @@ async function fetchStudentData() {
 
 // ===========================TAB 2: Gửi cập nhật thông tin sinh viên
 async function sendStudentUpdate() {
+  const start = performance.now();
   try{
     const payload = {
       ACTION: "UPDATE_STUDENT",
@@ -257,6 +258,7 @@ async function sendStudentUpdate() {
 
 // TAB 2: Nhập CSV
 async function importCSV() {
+  const start = performance.now();
   try{
       console.log("importCSV CALLED");
       const csvFile = document.getElementById('csvFile');
@@ -341,6 +343,7 @@ async function importCSV() {
 
 // ===========================Top học bổng (tự tải khi mở trang)
 async function fetchTopK() {
+  const start = performance.now();
   try{
       const body = document.getElementById('topkBody');
       if (!body) return;
