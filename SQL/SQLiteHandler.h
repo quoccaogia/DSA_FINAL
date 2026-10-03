@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <sqlite3.h>
-#include "backend/student.cpp" 
+#include "backend/Student.cpp" 
 
 using namespace std;
 
@@ -42,6 +42,7 @@ public:
                      "gender INTEGER NOT NULL, "
                      "date_of_birth TEXT, "
                      "major TEXT, "
+                     "cohort TEXT, "
                      "has_failed INTEGER NOT NULL, "
                      "credit INTEGER NOT NULL, "
                      "drl INTEGER NOT NULL);";
@@ -52,11 +53,32 @@ public:
             sqlite3_free(errMsg);
         }
     }
+    
+    //Kiem tra bang co du du lieu ko?
+    bool isFirst(){
+        string sql = "SELECT COUNT(*) FROM sinh_vien;";
+
+        sqlite3_stmt* stmt = nullptr;
+
+        sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+
+        bool first = false;
+
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            int count = sqlite3_column_int(stmt, 0);
+            first = (count == 0);
+        }
+
+        sqlite3_finalize(stmt);
+
+        return first;
+
+    }
 
     // 4. Load toàn bộ dữ liệu từ DB lên (Để nạp vào Hash Table / Set của Backend)
     vector<Student*> loadData() {
         vector<Student*> students;
-        string sql = "SELECT mssv, name, gpa_4, gpa_10, gender, date_of_birth, major, has_failed, credit, drl FROM sinh_vien;";
+        string sql = "SELECT mssv, name, gpa_4, gpa_10, gender, date_of_birth, major, cohort, has_failed, credit, drl FROM sinh_vien;";
         sqlite3_stmt* stmt;
 
         if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
@@ -68,11 +90,12 @@ public:
                 bool gender = sqlite3_column_int(stmt, 4) != 0;
                 string dob = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
                 string major = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6));
-                bool hasFailed = sqlite3_column_int(stmt, 7) != 0;
-                int credit = sqlite3_column_int(stmt, 8);
-                int drl = sqlite3_column_int(stmt, 9);
+                string cohort = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
+                bool hasFailed = sqlite3_column_int(stmt, 8) != 0;
+                int credit = sqlite3_column_int(stmt, 9);
+                int drl = sqlite3_column_int(stmt, 10);
 
-                students.push_back(new Student(name, gpa_4, gpa_10, gender, dob, major, mssv, hasFailed, credit, drl));
+                students.push_back(new Student(name, gpa_4, gpa_10, gender, dob, major, cohort, mssv, hasFailed, credit, drl));
             }
         }
         sqlite3_finalize(stmt);
@@ -94,9 +117,10 @@ public:
             sqlite3_bind_int(stmt, 5, s->get_Gender() ? 1 : 0);
             sqlite3_bind_text(stmt, 6, s->get_DateOfBirth().c_str(), -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(stmt, 7, s->get_Major().c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_int(stmt, 8, s->get_IsNgu() ? 1 : 0);
-            sqlite3_bind_int(stmt, 9, s->get_Credit());
-            sqlite3_bind_int(stmt, 10, s->get_DRL());
+            sqlite3_bind_text(stmt, 8, s->get_Major().c_str(), -1, SQLITE_TRANSIENT);
+            sqlite3_bind_int(stmt, 9, s->get_IsNgu() ? 1 : 0);
+            sqlite3_bind_int(stmt, 10, s->get_Credit());
+            sqlite3_bind_int(stmt, 11, s->get_DRL());
 
             if (sqlite3_step(stmt) == SQLITE_DONE) {
                 sqlite3_finalize(stmt);
@@ -122,6 +146,7 @@ public:
         sqlite3_finalize(stmt);
         return false;
     }
+
 };
 
 #endif

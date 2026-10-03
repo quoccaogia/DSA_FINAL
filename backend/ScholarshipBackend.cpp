@@ -1,6 +1,7 @@
 ﻿#include <unordered_map>
 #include <set>
 #include <vector>
+#include <nlohmann/json.hpp>
 #include "Student.cpp"
 #include "CmpHocBong.cpp" // File chứa struct/class so sánh để sort học bổng
 
@@ -23,17 +24,63 @@ public:
         if (!student) return;
 
         // Lưu vào Hash Table chính
-        studentMap[student->getMssv()] = student;
+        studentMap[student->get_MSSV()] = student;
 
         // Nếu sinh viên đủ điều kiện xét học bổng (không rớt môn)
-        if (!student->getIsNgu()) {
+        if (!student->get_IsNgu()) {
             // Đưa vào set toàn trường
             allSchoolPriority.insert(student);
 
             // Đưa vào Index phụ theo Ngành và Khóa
-            string key = student->getMajor() + "_" + student->getCohort();
+            string key = student->get_Major() + "_" + student->get_Cohort();
             majorCohortIndex[key].insert(student);
         }
+    }
+
+    //Cập nhật sinh viên
+    bool updateStudent(nlohmann::json& data){
+        Student* student = getStudent(data["MSSV"].get<string>());
+        if(student == nullptr){ //Ko tìm thấy sv = ko có sinh viên để update -> trả về false
+            return false;
+        }
+
+        if (!data["name"].is_null()){ //Kiểm tra xem liệu trường này có trống ko?, nếu trogn61 thì bỏ qua
+        student->set_Name(data["name"].get<string>()); //Nếu ko trống thì cập nhật = setter
+        }
+
+        if (!data["gpa_4"].is_null()){
+            student->set_GPA4(data["gpa_4"].get<float>());
+        }
+
+        if (!data["gpa_10"].is_null()){
+            student->set_GPA10(data["gpa_10"].get<float>());
+        }
+
+        if (!data["gender"].is_null()){
+            student->set_Gender(data["gender"].get<bool>());
+        }
+
+        if (!data["dateOfBirth"].is_null()){
+            student->set_DateOfBirth(data["dateOfBirth"].get<string>());
+        }
+
+        if (!data["major"].is_null()){
+            student->set_Major(data["major"].get<string>());
+        }
+
+        if (!data["cohort"].is_null()){
+            student->set_Cohort(data["cohort"].get<string>());
+        }
+
+        if (!data["credit"].is_null()){
+            student->set_Credit(data["credit"].get<int>());
+        }
+
+        if (!data["DRL"].is_null()){
+            student->set_DRL(data["DRL"].get<int>());
+        }
+
+        return true;
     }
 
     // Tìm kiếm sinh viên theo MSSV -> O(1)
@@ -46,7 +93,7 @@ public:
     }
 	// 1. Lấy Top % TOÀN TRƯỜNG của sinh viên
     float getTopPercentAllSchool(Student* sv) {
-        if (!sv || sv->getIsNgu()) return -1.0f; // Không đủ điều kiện xét học bổng
+        if (!sv || sv->get_IsNgu()) return -1.0f; // Không đủ điều kiện xét học bổng
 
         // Tìm vị trí của sinh viên trong cây toàn trường -> O(log N)
         auto it = allSchoolPriority.find(sv);
@@ -66,12 +113,12 @@ public:
 
     // 2. Lấy Top % THEO NGÀNH VÀ KHÓA của sinh viên
     float getTopPercentByMajorAndCohort(Student* sv) {
-        if (!sv || sv->getIsNgu()) return -1.0f;
+        if (!sv || sv->get_IsNgu()) return -1.0f;
 
         // Tạo key để tra cứu index phụ
-        string key = sv->getMajor() + "_" + sv->getCohort();
+        string key = sv->get_Major() + "_" + sv->get_Cohort();
         auto mapIt = majorCohortIndex.find(key);
-        if (mapIt == mapIt->end()) {
+        if (mapIt == majorCohortIndex.end()) {
             return -1.0f; // Ngành/khóa này không tồn tại
         }
 
@@ -109,7 +156,7 @@ public:
         allSchoolPriority.erase(student);
 
         // Xóa khỏi Index phụ Ngành_Khóa
-        string key = student->getMajor() + "_" + student->getCohort();
+        string key = student->get_Major() + "_" + student->get_Cohort();
         auto indexIt = majorCohortIndex.find(key);
         if (indexIt != majorCohortIndex.end()) {
             indexIt->second.erase(student);
