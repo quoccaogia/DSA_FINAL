@@ -1,2 +1,5 @@
 api
 server
+scholarship.db
+sqlite3.o
+

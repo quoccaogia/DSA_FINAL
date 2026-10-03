@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 #include <sqlite3.h>
-#include "backend/Student.cpp" 
 
 using namespace std;
 
@@ -95,7 +94,7 @@ public:
                 int credit = sqlite3_column_int(stmt, 9);
                 int drl = sqlite3_column_int(stmt, 10);
 
-                students.push_back(new Student(name, gpa_4, gpa_10, gender, dob, major, cohort, mssv, hasFailed, credit, drl));
+                students.push_back(new Student(name, gpa_4, gpa_10, gender, dob, major, mssv, cohort, hasFailed, credit, drl));
             }
         }
         sqlite3_finalize(stmt);
