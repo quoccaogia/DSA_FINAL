@@ -150,7 +150,11 @@ async function importCSV() {
     for (let j = 0; j < headers.length; j++) {
       const key = headers[j].trim();
       const raw = (values[j] ?? "").trim();
-      const type = types[key];
+      const type = {
+        credit: 'int', drl: 'int',
+        gpa_4: 'float', gpa_10: 'float',
+        gender: 'bool', has_failed: 'bool'
+      }
 
       if (raw === "") {
         student[key] = null;
@@ -174,7 +178,7 @@ async function importCSV() {
 
   const payload = {
     ACTION: "UPLOAD BASE DATA",
-    students: students
+    CSV: students
   };
 
   try {
