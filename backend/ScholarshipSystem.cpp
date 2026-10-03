@@ -19,7 +19,7 @@ private:
     unordered_map<string, set<Student*, CmpHocBong>> majorCohortIndex;
 
 public:
-    // Thêm sinh viên vào hệ thống (Cập nhật đồng thời vào các cấu trúc Index)
+    // ======================Thêm sinh viên vào hệ thống (Cập nhật đồng thời vào các cấu trúc Index)
     void addStudent(Student* student) {
         if (!student) return;
 
@@ -37,14 +37,15 @@ public:
         }
     }
 
-    //Cập nhật sinh viên
+    // ====================Cập nhật sinh viên
     bool updateStudent(nlohmann::json& data){
         Student* student = getStudent(data["MSSV"].get<string>());
         if(student == nullptr){ //Ko tìm thấy sv = ko có sinh viên để update -> trả về false
             return false;
         }
-        if (!student->get_IsNgu()) {
 
+        //Kiểm tra liệu student này có trong index ko
+        if (!student->get_IsNgu()) { 
             allSchoolPriority.erase(student);
 
             string oldKey =
@@ -96,9 +97,10 @@ public:
         if (!data["DRL"].is_null()){
             student->set_DRL(data["DRL"].get<int>());
         }
+        
 
+        //Cập nhật lại index
         if (!student->get_IsNgu()) {
-
             allSchoolPriority.insert(student);
 
             string newKey =
@@ -113,12 +115,15 @@ public:
     // Tìm kiếm sinh viên theo MSSV -> O(1)
     Student* getStudent(const string& mssv) {
         auto it = studentMap.find(mssv);
+
         if (it == studentMap.end()) {
             return nullptr;
         }
+
         return it->second;
     }
-	// 1. Lấy Top % TOÀN TRƯỜNG của sinh viên
+
+	// ================== 1. Lấy Top % TOÀN TRƯỜNG của sinh viên
     float getTopPercentAllSchool(Student* sv) {
         if (!sv || sv->get_IsNgu()) return -1.0f; // Không đủ điều kiện xét học bổng
 
@@ -138,7 +143,7 @@ public:
         return (static_cast<float>(rank) / totalStudents) * 100.0f;
     }
 
-    // 2. Lấy Top % THEO NGÀNH VÀ KHÓA của sinh viên
+    // ======================== 2. Lấy Top % THEO NGÀNH VÀ KHÓA của sinh viên
     float getTopPercentByMajorAndCohort(Student* sv) {
         if (!sv || sv->get_IsNgu()) return -1.0f;
 
@@ -165,7 +170,7 @@ public:
         return (static_cast<float>(rank) / totalInGroup) * 100.0f;
     }
 
-    // Xóa sinh viên khỏi hệ thống (Xóa sạch ở cả Map và các Set/Index)
+    // =================== Xóa sinh viên khỏi hệ thống (Xóa sạch ở cả Map và các Set/Index)
     bool deleteStudent(const string& mssv) {
         auto it = studentMap.find(mssv);
         if (it == studentMap.end()) {
@@ -195,7 +200,7 @@ public:
         return true;
     }
 
-    // Lấy Top K học bổng TOÀN TRƯỜNG -> O(K) cực nhanh
+    // =============================  Lấy Top K học bổng TOÀN TRƯỜNG -> O(K) cực nhanh
     vector<Student*> getTopKAllSchool(int topK) {
         vector<Student*> result;
         int count = 0;
@@ -209,7 +214,7 @@ public:
         return result;
     }
 
-    // Lấy Top K học bổng THEO NGÀNH VÀ KHÓA -> O(log M + K) cực kỳ tối ưu, không sợ "đáy"
+    // ================== Lấy Top K học bổng THEO NGÀNH VÀ KHÓA -> O(log M + K) cực kỳ tối ưu, không sợ "đáy"
     vector<Student*> getTopKByMajorAndCohort(const string& major, const string& cohort, int topK) {
         vector<Student*> result;
         string key = major + "_" + cohort;

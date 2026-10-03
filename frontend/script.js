@@ -197,16 +197,17 @@ async function sendStudentUpdate() {
   };
 
   try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) throw new Error("Cập nhật thất bại.");
-      alert("Cập nhật thành công!");
-    } catch (error) {
-      alert("Lỗi khi gửi dữ liệu: " + error.message);
-    }
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw new Error("Cập nhật thất bại.");
+    alert("Cập nhật thành công!");
+  } 
+  catch (error) {
+    alert("Lỗi khi gửi dữ liệu: " + error.message);
+  }
 }
 
 // TAB 2: Nhập CSV
@@ -264,8 +265,6 @@ async function importCSV() {
     students.push(student);
   }
 
-  console.log(students); // kiểm tra trước khi gửi
-
   const payload = {
     ACTION: "UPLOAD BASE DATA",
     CSV: students
@@ -279,7 +278,8 @@ async function importCSV() {
     });
     if (!response.ok) throw new Error("Upload thất bại.");
     alert("Đã gửi " + students.length + " sinh viên!");
-  } catch (error) {
+  }
+  catch (error) {
     alert("Lỗi khi gửi dữ liệu: " + error.message);
   }
 
@@ -303,6 +303,7 @@ async function fetchTopK() {
   };
 
   let data;
+
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -311,7 +312,8 @@ async function fetchTopK() {
     });
     if (!response.ok) throw new Error();
     data = await response.json();
-  } catch (error) {
+  } 
+  catch (error) {
     showMessage("Chưa kết nối được Backend.");
     return;
   }

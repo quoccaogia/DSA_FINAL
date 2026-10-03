@@ -47,48 +47,48 @@ struct Student{
         }
 
         float get_GPA4() const {
-        return gpa_4;
+            return gpa_4;
         }
 
         float get_GPA10() const {
-        return gpa_10;
+            return gpa_10;
         }
 
         bool get_Gender() const {
-        return gender;
+            return gender;
         }
 
         string get_DateOfBirth() const {
-        return dateOfBirth;
+            return dateOfBirth;
         }
         
         string get_Cohort() const {
-        return cohort;
+            return cohort;
         }   
+
         string get_Major() const {
-        return major;
+            return major;
         }
 
         string get_MSSV() const {
-        return MSSV;
+            return MSSV;
         }
 
         bool get_IsNgu() const {
-        return isNgu;
+            return isNgu;
         }
 
         int get_Credit() const {
-        return credit;
+            return credit;
         }
 
         int get_DRL() const {
-        return DRL;
+            return DRL;
         }
-
 
         //SETTER
         void set_Name(string value) {
-        name = value;
+            name = value;
         }
 
         void set_GPA4(float value) {

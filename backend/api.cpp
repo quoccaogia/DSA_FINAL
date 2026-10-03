@@ -1,6 +1,6 @@
 #include "httplib.h"
 #include <nlohmann/json.hpp>
-#include "ScholarshipBackend.cpp"
+#include "ScholarshipSystem.cpp"
 #include <string>
 #include <vector>
 #include "SQL/SQLiteHandler.h"
@@ -10,10 +10,9 @@ using namespace std;
 int main() {
     httplib::Server server;
 
-    SQLiteHandler database;
-    ScholarshipSystem system; 
+    SQLiteHandler database; //Tạo data base
+    ScholarshipSystem system; //Tạo hệ thống
     
-
     //Khoi dong thi add student vao
     if(database.isFirst() == false){
         for(Student* student : database.loadData()){
@@ -21,8 +20,8 @@ int main() {
         }
     }
     
-    server.Post("/api/student", [&system, &database /*add whatever outside*/](const httplib::Request& req,
-                                   httplib::Response& res) {
+    server.Post("/api/student", [&system, &database /*add whatever outside*/]
+                                (const httplib::Request& req, httplib::Response& res) {
 
         // Nhận JSON từ FE
         nlohmann::json payload = nlohmann::json::parse(req.body);
@@ -156,6 +155,8 @@ int main() {
                 "application/json"
             );
         }
+
+        // ================= TopK dựa theo ngành nghề
         else if(action == "GET_TOP_K_MAJOR_COHORT"){
             string major = payload["major"].get<string>();
             string cohort = payload["cohort"].get<string>();
@@ -194,9 +195,8 @@ int main() {
         {"Access-Control-Allow-Headers", "Content-Type"}
     });
 
-    server.Options("/api/student", [](const httplib::Request& req,
-                                  httplib::Response& res) {
-    res.status = 200;
+    server.Options("/api/student", [](const httplib::Request& req, httplib::Response& res) {
+        res.status = 200;
     });
 
     server.listen("localhost", 8080);
