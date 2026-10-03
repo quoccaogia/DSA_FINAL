@@ -74,22 +74,27 @@ public:
 
     }
 
-    // 4. Load toàn bộ dữ liệu từ DB lên (Để nạp vào Hash Table / Set của Backend)
     vector<Student*> loadData() {
         vector<Student*> students;
         string sql = "SELECT mssv, name, gpa_4, gpa_10, gender, date_of_birth, major, cohort, has_failed, credit, drl FROM sinh_vien;";
-        sqlite3_stmt* stmt;
+        sqlite3_stmt* stmt = nullptr;
+
+        // Đọc cột text an toàn, NULL -> chuỗi rỗng
+        auto text = [&](int col) -> string {
+            const unsigned char* t = sqlite3_column_text(stmt, col);
+            return t ? string(reinterpret_cast<const char*>(t)) : string();
+            };
 
         if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
             while (sqlite3_step(stmt) == SQLITE_ROW) {
-                string mssv = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-                string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+                string mssv = text(0);
+                string name = text(1);
                 float gpa_4 = static_cast<float>(sqlite3_column_double(stmt, 2));
                 float gpa_10 = static_cast<float>(sqlite3_column_double(stmt, 3));
                 bool gender = sqlite3_column_int(stmt, 4) != 0;
-                string dob = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
-                string major = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6));
-                string cohort = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
+                string dob = text(5);
+                string major = text(6);
+                string cohort = text(7);
                 bool hasFailed = sqlite3_column_int(stmt, 8) != 0;
                 int credit = sqlite3_column_int(stmt, 9);
                 int drl = sqlite3_column_int(stmt, 10);
@@ -101,33 +106,30 @@ public:
         return students;
     }
 
-    // 5. Thêm mới hoặc Cập nhật sinh viên (Dùng INSERT OR REPLACE)
     bool saveStudent(const Student* s) {
         if (!s) return false;
-        string sql = "INSERT OR REPLACE INTO sinh_vien (mssv, name, gpa_4, gpa_10, gender, date_of_birth, major, has_failed, credit, drl) "
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        sqlite3_stmt* stmt;
+        string sql = "INSERT OR REPLACE INTO sinh_vien "
+            "(mssv, name, gpa_4, gpa_10, gender, date_of_birth, major, cohort, has_failed, credit, drl) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        sqlite3_stmt* stmt = nullptr;
 
-        if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
-            sqlite3_bind_text(stmt, 1, s->get_MSSV().c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 2, s->get_Name().c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_double(stmt, 3, s->get_GPA4());
-            sqlite3_bind_double(stmt, 4, s->get_GPA10());
-            sqlite3_bind_int(stmt, 5, s->get_Gender() ? 1 : 0);
-            sqlite3_bind_text(stmt, 6, s->get_DateOfBirth().c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 7, s->get_Major().c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 8, s->get_Major().c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_int(stmt, 9, s->get_IsNgu() ? 1 : 0);
-            sqlite3_bind_int(stmt, 10, s->get_Credit());
-            sqlite3_bind_int(stmt, 11, s->get_DRL());
+        if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) return false;
 
-            if (sqlite3_step(stmt) == SQLITE_DONE) {
-                sqlite3_finalize(stmt);
-                return true;
-            }
-        }
+        sqlite3_bind_text(stmt, 1, s->get_MSSV().c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, s->get_Name().c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_double(stmt, 3, s->get_GPA4());
+        sqlite3_bind_double(stmt, 4, s->get_GPA10());
+        sqlite3_bind_int(stmt, 5, s->get_Gender() ? 1 : 0);
+        sqlite3_bind_text(stmt, 6, s->get_DateOfBirth().c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 7, s->get_Major().c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 8, s->get_Cohort().c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt, 9, s->get_IsNgu() ? 1 : 0);
+        sqlite3_bind_int(stmt, 10, s->get_Credit());
+        sqlite3_bind_int(stmt, 11, s->get_DRL());
+
+        bool ok = (sqlite3_step(stmt) == SQLITE_DONE);
         sqlite3_finalize(stmt);
-        return false;
+        return ok;
     }
 
     // 6. Xóa sinh viên theo MSSV
