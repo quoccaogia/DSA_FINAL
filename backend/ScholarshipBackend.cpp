@@ -1,6 +1,7 @@
 ﻿#include <unordered_map>
 #include <set>
 #include <vector>
+#include <nlohmann/json.hpp>
 #include "Student.cpp"
 #include "CmpHocBong.cpp" // File chứa struct/class so sánh để sort học bổng
 
@@ -34,6 +35,52 @@ public:
             string key = student->get_Major() + "_" + student->get_Cohort();
             majorCohortIndex[key].insert(student);
         }
+    }
+
+    //Cập nhật sinh viên
+    bool updateStudent(nlohmann::json& data){
+        Student* student = getStudent(data["MSSV"].get<string>());
+        if(student == nullptr){ //Ko tìm thấy sv = ko có sinh viên để update -> trả về false
+            return false;
+        }
+
+        if (!data["name"].is_null()){ //Kiểm tra xem liệu trường này có trống ko?, nếu trogn61 thì bỏ qua
+        student->set_Name(data["name"].get<string>()); //Nếu ko trống thì cập nhật = setter
+        }
+
+        if (!data["gpa_4"].is_null()){
+            student->set_GPA4(data["gpa_4"].get<float>());
+        }
+
+        if (!data["gpa_10"].is_null()){
+            student->set_GPA10(data["gpa_10"].get<float>());
+        }
+
+        if (!data["gender"].is_null()){
+            student->set_Gender(data["gender"].get<bool>());
+        }
+
+        if (!data["dateOfBirth"].is_null()){
+            student->set_DateOfBirth(data["dateOfBirth"].get<string>());
+        }
+
+        if (!data["major"].is_null()){
+            student->set_Major(data["major"].get<string>());
+        }
+
+        if (!data["cohort"].is_null()){
+            student->set_Cohort(data["cohort"].get<string>());
+        }
+
+        if (!data["credit"].is_null()){
+            student->set_Credit(data["credit"].get<int>());
+        }
+
+        if (!data["DRL"].is_null()){
+            student->set_DRL(data["DRL"].get<int>());
+        }
+
+        return true;
     }
 
     // Tìm kiếm sinh viên theo MSSV -> O(1)

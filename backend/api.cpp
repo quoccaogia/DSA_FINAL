@@ -1,4 +1,5 @@
 #include "httplib.h"
+#include <nlohmann/json.hpp>
 #include "ScholarshipBackend.cpp"
 #include <string>
 #include <vector>
@@ -13,9 +14,8 @@ int main() {
     ScholarshipSystem system; 
     
     for(Student* student : database.loadData()){
-        system.add_Student(student);
+        system.addStudent(student);
     }
-
 
     server.Post("/api/student", [&system, &database /*add whatever outside*/](const httplib::Request& req,
                                    httplib::Response& res) {
@@ -25,11 +25,12 @@ int main() {
         
         // Xử lý JSON REQ
         string action = payload["ACTION"].get<string>();
-        
+                                    
+        // ==== Lay thong tin cua hoc sinh dua theo MSSV
         if(action == "get_StudentInfo"){
             string mssv = payload["MSSV"].get<string>();
 
-            Student* info = system.get_Student(mssv);
+            Student* info = system.getStudent(mssv);
 
             //Nếu ko tìm thấy sinh vien
             if(info == nullptr){
@@ -60,8 +61,10 @@ int main() {
             res.set_content(responsePayload.dump(), "application/json");
         }
 
+
+        // === Update thong tin sinh vien
         else if(action == "UPDATE_STUDENT"){
-            bool status = system.update_Student(payload);
+            bool status = system.updateStudent(payload);
             
             if(status == false){
                 nlohmann::json responsePayload = {
@@ -74,11 +77,12 @@ int main() {
                 return;
             }
 
-            database.saveStudent(system.get_Student(payload["MSSV"].get<string>()));
+            database.saveStudent(system.getStudent(payload["MSSV"].get<string>()));
         }
 
+        // ===== Xoa thong tin sinh vien
         else if(action == "DELETE_STUDENT"){
-            bool status = system.delete_Student(payload["MSSV"].get<string>());
+            bool status = system.deleteStudent(payload["MSSV"].get<string>());
             if(status == true){
                 database.deleteStudent(payload["MSSV"].get<string>());
             }
@@ -90,6 +94,28 @@ int main() {
 
                 res.status = 404;
                 res.set_content(responsePayload.dump(), "application/json");
+            }
+        }
+
+        //Nhập csv lần đầu
+        else if(action == "UPLOAD BASE DATA"){
+            auto students_Info = payload["CSV"];
+
+            for(const auto& data : students_Info){
+                Student student(
+                    data["name"].get<string>(),
+                    data["gpa_4"].get<float>(),
+                    data["gpa_10"].get<float>(),
+                    data["gender"].get<bool>(),
+                    data["date_of_birth"].get<string>(),
+                    data["major"].get<string>(),
+                    data["mssv"].get<string>(),
+                    data["cohort"].get<string>(),
+                    data["has_failed"].get<bool>(),
+                    data["credit"].get<int>(),
+                    data["drl"].get<int>()
+                );
+                database.saveStudent(&student);
             }
         }
     });

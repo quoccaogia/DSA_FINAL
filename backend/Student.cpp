@@ -24,8 +24,8 @@ struct Student{
                 string dateOfBirth, // string d/month/year sepparator bằng dấu "/"
                 string major, //Tên ngành
                 string MSSV, //MSSV, "aabbbccc". a = niên khóa, b = ngành, c = stt
+                string cohort, // tên khóa  
                 bool isNgu,//trong kỳ có rớt môn ko? 
-                string cohort, // tên khóa 
                 int credit, //Số tính chỉ
                 int DRL){
             this->name = name;
@@ -110,7 +110,7 @@ struct Student{
         void set_Major(string value) {
             major = value;
         }
-        void setCohort(const string& value) {
+        void set_Cohort(const string& value) {
             cohort = value;
         }
 
