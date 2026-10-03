@@ -114,4 +114,78 @@ async function sendStudentUpdate() {
     } catch (error) {
       alert("Lỗi khi gửi dữ liệu: " + error.message);
     }
+  }
+
+// TAB 2: Nhập CSV
+async function importCSV() {
+  const csvFile = document.getElementById('csvFile');
+  if (!csvFile) return;
+  const file = csvFile.files[0];
+
+  if (!file) {
+    alert("Vui lòng chọn file CSV.");
+    return;
+  }
+
+  const text = await file.text();
+  const lines = text.split("\n");
+  const headers = lines[0].trim().split(",");
+
+  // Kiểu dữ liệu của từng cột (giống sendStudentUpdate)
+  const types = {
+    credit: 'int', DRL: 'int',
+    gpa_4: 'float', gpa_10: 'float',
+    gender: 'bool'
+  };
+
+  const students = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line === "") continue;
+
+    const values = line.split(",");
+    const student = {};
+
+    for (let j = 0; j < headers.length; j++) {
+      const key = headers[j].trim();
+      const raw = (values[j] ?? "").trim();
+      const type = types[key];
+
+      if (raw === "") {
+        student[key] = null;
+      } else if (type === 'int') {
+        const n = parseInt(raw, 10);
+        student[key] = isNaN(n) ? null : n;
+      } else if (type === 'float') {
+        const n = parseFloat(raw);
+        student[key] = isNaN(n) ? null : n;
+      } else if (type === 'bool') {
+        student[key] = raw === 'true';
+      } else {
+        student[key] = raw;
+      }
+    }
+
+    students.push(student);
+  }
+
+  console.log(students); // kiểm tra trước khi gửi
+
+  const payload = {
+    ACTION: "UPLOAD BASE DATA",
+    students: students
+  };
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw new Error("Upload thất bại.");
+    alert("Đã gửi " + students.length + " sinh viên!");
+  } catch (error) {
+    alert("Lỗi khi gửi dữ liệu: " + error.message);
+  }
 }
