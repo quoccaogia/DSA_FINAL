@@ -23,15 +23,15 @@ public:
         if (!student) return;
 
         // Lưu vào Hash Table chính
-        studentMap[student->getMssv()] = student;
+        studentMap[student->get_MSSV()] = student;
 
         // Nếu sinh viên đủ điều kiện xét học bổng (không rớt môn)
-        if (!student->getIsNgu()) {
+        if (!student->get_IsNgu()) {
             // Đưa vào set toàn trường
             allSchoolPriority.insert(student);
 
             // Đưa vào Index phụ theo Ngành và Khóa
-            string key = student->getMajor() + "_" + student->getCohort();
+            string key = student->get_Major() + "_" + student->get_Cohort();
             majorCohortIndex[key].insert(student);
         }
     }
@@ -46,7 +46,7 @@ public:
     }
 	// 1. Lấy Top % TOÀN TRƯỜNG của sinh viên
     float getTopPercentAllSchool(Student* sv) {
-        if (!sv || sv->getIsNgu()) return -1.0f; // Không đủ điều kiện xét học bổng
+        if (!sv || sv->get_IsNgu()) return -1.0f; // Không đủ điều kiện xét học bổng
 
         // Tìm vị trí của sinh viên trong cây toàn trường -> O(log N)
         auto it = allSchoolPriority.find(sv);
@@ -66,12 +66,12 @@ public:
 
     // 2. Lấy Top % THEO NGÀNH VÀ KHÓA của sinh viên
     float getTopPercentByMajorAndCohort(Student* sv) {
-        if (!sv || sv->getIsNgu()) return -1.0f;
+        if (!sv || sv->get_IsNgu()) return -1.0f;
 
         // Tạo key để tra cứu index phụ
-        string key = sv->getMajor() + "_" + sv->getCohort();
+        string key = sv->get_Major() + "_" + sv->get_Cohort();
         auto mapIt = majorCohortIndex.find(key);
-        if (mapIt == mapIt->end()) {
+        if (mapIt == majorCohortIndex.end()) {
             return -1.0f; // Ngành/khóa này không tồn tại
         }
 
@@ -109,7 +109,7 @@ public:
         allSchoolPriority.erase(student);
 
         // Xóa khỏi Index phụ Ngành_Khóa
-        string key = student->getMajor() + "_" + student->getCohort();
+        string key = student->get_Major() + "_" + student->get_Cohort();
         auto indexIt = majorCohortIndex.find(key);
         if (indexIt != majorCohortIndex.end()) {
             indexIt->second.erase(student);
