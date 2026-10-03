@@ -33,8 +33,86 @@ function getValueOrNull(elementId, type = 'string') {
   return val;
 }
 
+// ===========================Top học bổng theo ngành/khóa (hiện sau khi tra cứu)
+async function fetchTopKGroup(major, cohort) {
+  console.log("fetchTopKGroup CALLED:", major, cohort);
+
+  const card = document.getElementById('topkGroupCard');
+  const body = document.getElementById('topkGroupBody');
+  const title = document.getElementById('topkGroupTitle');
+  if (!card || !body) return;
+
+  card.style.display = 'block';
+  if (title) title.textContent = "Top học bổng ngành " + (major ?? "?") + " - khóa " + (cohort ?? "?");
+
+  const showMessage = (msg) => {
+    body.innerHTML = "";
+    const cell = body.insertRow().insertCell();
+    cell.colSpan = 7;
+    cell.textContent = msg;
+  };
+
+  if (!major || !cohort) {
+    showMessage("Chưa có thông tin ngành/khóa của sinh viên.");
+    console.log("Dung o day");
+    return;
+  }
+
+  showMessage("Đang tải...");
+
+  const payload = {
+    ACTION: "GET_TOP_K_MAJOR_COHORT",
+    major: major,
+    cohort: cohort
+  };
+
+  let data;
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw new Error();
+    data = await response.json();
+  } catch (error) {
+    showMessage("Chưa kết nối được Backend.");
+    return;
+  }
+
+  const list = Array.isArray(data) ? data : (data.students ?? []);
+
+  if (list.length === 0) {
+    console.log("dung o list.length == 0");
+    showMessage("Chưa có sinh viên nào.");
+    return;
+  }
+
+  body.innerHTML = "";
+  list.forEach((sv, index) => {
+    const row = body.insertRow();
+    const values = [
+      index + 1,
+      sv.MSSV ?? sv.mssv,
+      sv.name,
+      sv.major,
+      sv.gpa_4,
+      sv.gpa_10,
+      sv.DRL ?? sv.drl
+    ];
+    values.forEach(v => {
+      row.insertCell().textContent = v ?? "-";
+    });
+  });
+
+  console.log("fetchTopKGroup END");
+}
+
+
+
 // ================================TAB 1: Tra cứu thông tin sinh viên
 async function fetchStudentData() {
+  console.log("fetchStudentData CALLED");
   const searchEl = document.getElementById('searchMssv');
   if (!searchEl) return;
 
@@ -88,15 +166,19 @@ async function fetchStudentData() {
   setField('res_drl', data.DRL ?? "Chưa có (null)");
 
   const showPercent = (p) => {
-  if (p === undefined || p === null) return "Chưa có (null)";
-  if (p < 0) return "Không đủ điều kiện";
-  return "Top " + p.toFixed(1) + "%";
-};
-setField('res_topAll', showPercent(data.topPercentAllSchool));
-setField('res_topGroup', showPercent(data.topPercentGroup));
+    if (p === undefined || p === null) return "Chưa có (null)";
+    if (p < 0) return "Không đủ điều kiện";
+    return "Top " + p.toFixed(1) + "%";
+  };
 
-fetchTopKGroup(data.major, data.cohort);
 
+  setField('res_topAll', showPercent(data.topPercentAllSchool));
+
+  setField('res_topGroup', showPercent(data.topPercentGroup));
+
+  fetchTopKGroup(data.major, data.cohort);
+
+  console.log("fetchStudentData END");
 }
 
 // ===========================TAB 2: Gửi cập nhật thông tin sinh viên
@@ -125,10 +207,11 @@ async function sendStudentUpdate() {
     } catch (error) {
       alert("Lỗi khi gửi dữ liệu: " + error.message);
     }
-  }
+}
 
 // TAB 2: Nhập CSV
 async function importCSV() {
+  console.log("importCSV CALLED");
   const csvFile = document.getElementById('csvFile');
   if (!csvFile) return;
   const file = csvFile.files[0];
@@ -200,7 +283,7 @@ async function importCSV() {
     alert("Lỗi khi gửi dữ liệu: " + error.message);
   }
 
-
+  console.log("importCSV END");
  }
 
 // ===========================Top học bổng (tự tải khi mở trang)
@@ -259,71 +342,3 @@ async function fetchTopK() {
 
 // Tự chạy khi mở trang
 fetchTopK();
-
-// ===========================Top học bổng theo ngành/khóa (hiện sau khi tra cứu)
-async function fetchTopKGroup(major, cohort) {
-  const card = document.getElementById('topkGroupCard');
-  const body = document.getElementById('topkGroupBody');
-  const title = document.getElementById('topkGroupTitle');
-  if (!card || !body) return;
-
-  card.style.display = 'block';
-  if (title) title.textContent = "Top học bổng ngành " + (major ?? "?") + " - khóa " + (cohort ?? "?");
-
-  const showMessage = (msg) => {
-    body.innerHTML = "";
-    const cell = body.insertRow().insertCell();
-    cell.colSpan = 7;
-    cell.textContent = msg;
-  };
-
-  if (!major || !cohort) {
-    showMessage("Chưa có thông tin ngành/khóa của sinh viên.");
-    return;
-  }
-
-  showMessage("Đang tải...");
-
-  const payload = {
-    ACTION: "GET_TOP_K",
-    major: major,
-    cohort: cohort
-  };
-
-  let data;
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) throw new Error();
-    data = await response.json();
-  } catch (error) {
-    showMessage("Chưa kết nối được Backend.");
-    return;
-  }
-
-  const list = Array.isArray(data) ? data : (data.students ?? []);
-  if (list.length === 0) {
-    showMessage("Chưa có sinh viên nào.");
-    return;
-  }
-
-  body.innerHTML = "";
-  list.forEach((sv, index) => {
-    const row = body.insertRow();
-    const values = [
-      index + 1,
-      sv.MSSV ?? sv.mssv,
-      sv.name,
-      sv.major,
-      sv.gpa_4,
-      sv.gpa_10,
-      sv.DRL ?? sv.drl
-    ];
-    values.forEach(v => {
-      row.insertCell().textContent = v ?? "-";
-    });
-  });
-}

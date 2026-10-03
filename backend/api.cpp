@@ -15,7 +15,7 @@ int main() {
     
 
     //Khoi dong thi add student vao
-    if(database.isFirst() == true){
+    if(database.isFirst() == false){
         for(Student* student : database.loadData()){
             system.addStudent(student);
         }
@@ -35,6 +35,8 @@ int main() {
             string mssv = payload["MSSV"].get<string>();
 
             Student* info = system.getStudent(mssv);
+            float topPercentAllSchool = system.getTopPercentAllSchool(info);
+            float topPercentGroup = system.getTopPercentByMajorAndCohort(info);
 
             //Nếu ko tìm thấy sinh vien
             if(info == nullptr){
@@ -57,9 +59,12 @@ int main() {
                 {"gender", info->get_Gender()},
                 {"dateOfBirth", info->get_DateOfBirth()},
                 {"major", info->get_Major()},
+                {"cohort", info->get_Cohort()},
                 {"MSSV", info->get_MSSV()},
                 {"credit", info->get_Credit()},
-                {"DRL", info->get_DRL()}
+                {"DRL", info->get_DRL()},
+                {"topPercentAllSchool", topPercentAllSchool},
+                {"topPercentGroup", topPercentGroup}
             };
 
             res.set_content(responsePayload.dump(), "application/json");
@@ -101,7 +106,7 @@ int main() {
             }
         }
 
-        //Nhập csv lần đầu
+        // ======= Nhập csv lần đầu
         else if(action == "UPLOAD BASE DATA"){
             auto students_Info = payload["CSV"];
 
@@ -123,6 +128,64 @@ int main() {
                 system.addStudent(student);
             }
         }
+    
+        // ===== TopK
+        else if(action == "GET_TOP_K"){
+            auto topStudents = system.getTopKAllSchool(10);
+
+            nlohmann::json list = nlohmann::json::array();
+
+            for (Student* s : topStudents) {
+                list.push_back({
+                    {"MSSV", s->get_MSSV()},
+                    {"name", s->get_Name()},
+                    {"major", s->get_Major()},
+                    {"gpa_4", s->get_GPA4()},
+                    {"gpa_10", s->get_GPA10()},
+                    {"DRL", s->get_DRL()},
+                    {"credit", s->get_Credit()}
+                });
+            }
+
+            nlohmann::json responsePayload = {
+                {"students", list}
+            };
+
+            res.set_content(
+                responsePayload.dump(),
+                "application/json"
+            );
+        }
+        else if(action == "GET_TOP_K_MAJOR_COHORT"){
+            string major = payload["major"].get<string>();
+            string cohort = payload["cohort"].get<string>();
+
+            auto topStudents = system.getTopKByMajorAndCohort(major, cohort, 10);
+
+            nlohmann::json list = nlohmann::json::array();
+
+            for (Student* s : topStudents) {
+                list.push_back({
+                    {"MSSV", s->get_MSSV()},
+                    {"name", s->get_Name()},
+                    {"major", s->get_Major()},
+                    {"gpa_4", s->get_GPA4()},
+                    {"gpa_10", s->get_GPA10()},
+                    {"DRL", s->get_DRL()},
+                    {"credit", s->get_Credit()}
+                });
+            }
+
+            nlohmann::json responsePayload = {
+                {"students", list}
+            };
+
+            res.set_content(
+                responsePayload.dump(),
+                "application/json"
+            );
+        }
+        
     });
 
     server.set_default_headers({
