@@ -43,6 +43,23 @@ public:
         if(student == nullptr){ //Ko tìm thấy sv = ko có sinh viên để update -> trả về false
             return false;
         }
+        if (!student->get_IsNgu()) {
+
+            allSchoolPriority.erase(student);
+
+            string oldKey =
+                student->get_Major() + "_" + student->get_Cohort();
+
+            auto it = majorCohortIndex.find(oldKey);
+
+            if (it != majorCohortIndex.end()) {
+                it->second.erase(student);
+
+                if (it->second.empty())
+                    majorCohortIndex.erase(it);
+            }
+        }
+
 
         if (!data["name"].is_null()){ //Kiểm tra xem liệu trường này có trống ko?, nếu trogn61 thì bỏ qua
         student->set_Name(data["name"].get<string>()); //Nếu ko trống thì cập nhật = setter
@@ -80,9 +97,18 @@ public:
             student->set_DRL(data["DRL"].get<int>());
         }
 
+        if (!student->get_IsNgu()) {
+
+            allSchoolPriority.insert(student);
+
+            string newKey =
+                student->get_Major() + "_" + student->get_Cohort();
+
+            majorCohortIndex[newKey].insert(student);
+        }
+
         return true;
     }
-
     // Tìm kiếm sinh viên theo MSSV -> O(1)
     Student* getStudent(const string& mssv) {
         auto it = studentMap.find(mssv);
