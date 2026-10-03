@@ -104,8 +104,8 @@ public:
     // 5. Thêm mới hoặc Cập nhật sinh viên (Dùng INSERT OR REPLACE)
     bool saveStudent(const Student* s) {
         if (!s) return false;
-        string sql = "INSERT OR REPLACE INTO sinh_vien (mssv, name, gpa_4, gpa_10, gender, date_of_birth, major, has_failed, credit, drl) "
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        string sql = "INSERT OR REPLACE INTO sinh_vien (mssv, name, gpa_4, gpa_10, gender, date_of_birth, major, cohort, has_failed, credit, drl) "
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         sqlite3_stmt* stmt;
 
         if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
@@ -116,7 +116,7 @@ public:
             sqlite3_bind_int(stmt, 5, s->get_Gender() ? 1 : 0);
             sqlite3_bind_text(stmt, 6, s->get_DateOfBirth().c_str(), -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(stmt, 7, s->get_Major().c_str(), -1, SQLITE_TRANSIENT);
-            sqlite3_bind_text(stmt, 8, s->get_Major().c_str(), -1, SQLITE_TRANSIENT);
+            sqlite3_bind_text(stmt, 8, s->get_Cohort().c_str(), -1, SQLITE_TRANSIENT);
             sqlite3_bind_int(stmt, 9, s->get_IsNgu() ? 1 : 0);
             sqlite3_bind_int(stmt, 10, s->get_Credit());
             sqlite3_bind_int(stmt, 11, s->get_DRL());

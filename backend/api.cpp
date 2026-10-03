@@ -13,10 +13,14 @@ int main() {
     SQLiteHandler database;
     ScholarshipSystem system; 
     
-    for(Student* student : database.loadData()){
-        system.addStudent(student);
-    }
 
+    //Khoi dong thi add student vao
+    if(database.isFirst() == true){
+        for(Student* student : database.loadData()){
+            system.addStudent(student);
+        }
+    }
+    
     server.Post("/api/student", [&system, &database /*add whatever outside*/](const httplib::Request& req,
                                    httplib::Response& res) {
 
@@ -102,7 +106,7 @@ int main() {
             auto students_Info = payload["CSV"];
 
             for(const auto& data : students_Info){
-                Student student(
+                Student* student = new Student(
                     data["name"].get<string>(),
                     data["gpa_4"].get<float>(),
                     data["gpa_10"].get<float>(),
@@ -115,7 +119,8 @@ int main() {
                     data["credit"].get<int>(),
                     data["drl"].get<int>()
                 );
-                database.saveStudent(&student);
+                database.saveStudent(student);
+                system.addStudent(student);
             }
         }
     });

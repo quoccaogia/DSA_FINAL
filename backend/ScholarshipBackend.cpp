@@ -138,11 +138,6 @@ public:
         return (static_cast<float>(rank) / totalInGroup) * 100.0f;
     }
 
-
-
-
-
-
     // Xóa sinh viên khỏi hệ thống (Xóa sạch ở cả Map và các Set/Index)
     bool deleteStudent(const string& mssv) {
         auto it = studentMap.find(mssv);
