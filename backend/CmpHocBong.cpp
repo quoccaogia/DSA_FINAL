@@ -1,22 +1,21 @@
 ﻿struct CmpHocBong {
-    bool operator()(Student* a, Student* b){
-
-        // 1. Ưu tiên GPA hệ 4 giảm dần
+    bool operator()(const Student* a, const Student* b) const {
+        // ===== 1. Tiêu chí chính: GPA hệ 4 (càng cao càng ưu tiên đứng trước) =====
         if (a->get_GPA4() != b->get_GPA4()) {
-            return a->get_GPA4() > b->get_GPA4();
+            return a->get_GPA4() > b->get_GPA4(); // Giảm dần
         }
 
-        // 2. Nếu GPA bằng nhau -> Ưu tiên Điểm rèn luyện giảm dần
+        // ===== 2. Tiêu chí phụ 1: Điểm rèn luyện (DRL) (cao hơn ưu tiên) =====
         if (a->get_DRL() != b->get_DRL()) {
-            return a->get_DRL() > b->get_DRL();
+            return a->get_DRL() > b->get_DRL(); // Giảm dần
         }
 
-        // 3. Nếu Điểm rèn luyện bằng nhau -> Ưu tiên Số tín chỉ giảm dần
-        if (a->get_Credit() != b->get_Credit()) {
-            return a->get_Credit() > b->get_Credit();
+        // ===== 3. Tiêu chí phụ 2: GPA hệ 10 (Dùng để phụ trợ khi điểm hệ 4 bằng nhau) =====
+        if (a->get_GPA10() != b->get_GPA10()) {
+            return a->get_GPA10() > b->get_GPA10(); // Giảm dần
         }
 
-        // 4. Nếu bằng nhau tất cả -> Sắp xếp theo MSSV tăng dần (để không bị trùng)
-        return a->get_MSSV() < b->get_MSSV();
+        // ===== 4. Tiêu chí cuối: MSSV (đảm bảo thứ tự ổn định, không bị trùng lặp trong Set) =====
+        return a->get_MSSV() < b->get_MSSV(); // Tăng dần (A -> Z)
     }
 };
