@@ -184,6 +184,7 @@
 
   <!-- ================= TAB 2: CẬP NHẬT SINH VIÊN ================= -->
   <div id="update-tab" class="tab-content">
+
     <div class="card">
       <h2>Cập Nhật / Thêm Thông Tin Sinh Viên</h2>
 
@@ -244,6 +245,17 @@
         <button type="button" class="btn-submit" onclick="sendStudentUpdate()">Gửi Cập Nhật</button>
       </form>
     </div>
+
+    <div class="card">
+      <h2>Nhập từ file sinh CSV</h2>
+      <div class="form-group">
+        <label>Nhập MSSV:</label>
+        <input type="file" id="csvFile" accept=".csv">
+      </div>
+      <button class="btn-submit" onclick="importCSV()">Nhập CSV</button>
+    </div>
+
+
   </div>
 <!-- All your HTML cards and tabs here... -->
 
