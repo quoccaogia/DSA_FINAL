@@ -142,6 +142,7 @@ async function fetchStudentData() {
   } 
     catch (error) {
      alert("Lỗi kết nối Backend: " + error.message);
+     return;
   
   }
 
@@ -210,7 +211,45 @@ async function sendStudentUpdate() {
   }
 }
 
-// TAB 2: Nhập CSV
+// ===========================TAB 2: Xóa sinh viên
+async function deleteStudent() {
+  const mssv = getValueOrNull('del_mssv', 'string');
+
+  if (!mssv) {
+    alert("Vui lòng nhập MSSV để xóa!");
+    return;
+  }
+
+  if (!confirm("Bạn có chắc muốn xóa sinh viên " + mssv + "?")) return;
+
+  const payload = {
+    ACTION: "DELETE_STUDENT",
+    MSSV: mssv
+  };
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw new Error("Không tìm thấy sinh viên hoặc xóa thất bại.");
+    alert("Đã xóa sinh viên " + mssv + "!");
+  }
+  catch (error) {
+    alert("Lỗi khi xóa: " + error.message);
+    return;
+  }
+
+  // Dọn giao diện sau khi xóa
+  document.getElementById('del_mssv').value = "";
+  document.getElementById('studentResultCard').style.display = 'none';
+  document.getElementById('topkGroupCard').style.display = 'none';
+  fetchTopK();
+}
+
+
+// Nhập CSV
 async function importCSV() {
   console.log("importCSV CALLED");
   const csvFile = document.getElementById('csvFile');
