@@ -107,7 +107,74 @@ async function fetchTopKGroup(major, cohort) {
 
   console.log("fetchTopKGroup END");
 }
+let deleteMssv = "";
+//======= fetchDeleteStudentData
+async function fetchDeleteStudentData(){
+  const searchEl = document.getElementById('searchDeleteMssv');
+  if (!searchEl) return;
 
+  const mssv = searchEl.value.trim();
+  deleteMssv = mssv;
+  if (!mssv) {
+    alert("Vui lòng nhập MSSV để tìm kiếm!");
+    return;
+  }
+
+  let data;
+    // Gọi API thật từ Backend
+  try {
+    const payload = {
+      ACTION: "get_StudentInfo2",
+      MSSV: mssv
+    }
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) throw new Error("Không thể lấy dữ liệu.");
+    const raw = await response.text();
+
+    console.log("STATUS:", response.status);
+    console.log("RAW RESPONSE:", raw);
+
+    if (!raw.trim()) {
+        throw new Error("Backend trả response rỗng!");
+    }
+
+    data = JSON.parse(raw);
+  } 
+    catch (error) {
+     alert("Lỗi kết nối Backend: " + error.message);
+     return;
+  
+  }
+
+  // Hiển thị bảng kết quả
+  const resultCard = document.getElementById('studentDeleteResultCard');
+  if (resultCard) resultCard.style.display = 'block';
+
+  // Hàm phụ hỗ trợ ghi text an toàn
+  const setField = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+
+  setField('del_res_name', data.name ?? "Chưa có (null)");
+  setField('del_res_mssv', data.MSSV ?? mssv);
+  setField('del_res_major', data.major ?? "Chưa có (null)");
+  setField('del_res_dob', data.dateOfBirth ?? "Chưa có (null)");
+  setField('del_res_gender', data.gender === true ? "Nam" : (data.gender === false ? "Nữ" : "Chưa có (null)"));
+  setField('del_res_gpa4', data.gpa_4 ?? "Chưa có (null)");
+  setField('del_res_gpa10', data.gpa_10 ?? "Chưa có (null)");
+  setField('del_res_credit', data.credit ?? "Chưa có (null)");
+  setField('del_res_cohort', data.cohort ?? "Chưa có (null)");
+  setField('del_res_isNgu', data.isNgu === true ? "Có rớt" : (data.gender === false ? "Không rớt" : "Chưa có (null)"));
+  setField('del_res_drl', data.DRL ?? "Chưa có (null)");
+
+}
 
 
 // ================================TAB 1: Tra cứu thông tin sinh viên
@@ -143,7 +210,6 @@ async function fetchStudentData() {
     catch (error) {
      alert("Lỗi kết nối Backend: " + error.message);
      return;
-  
   }
 
   // Hiển thị bảng kết quả
@@ -213,7 +279,7 @@ async function sendStudentUpdate() {
 
 // ===========================TAB 2: Xóa sinh viên
 async function deleteStudent() {
-  const mssv = getValueOrNull('del_mssv', 'string');
+  const mssv = deleteMssv;
 
   if (!mssv) {
     alert("Vui lòng nhập MSSV để xóa!");

@@ -151,7 +151,8 @@
   <!-- Navigation Tabs -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('search-tab', this)">1. Tra cứu Sinh viên</button>
-    <button class="tab-btn" onclick="switchTab('update-tab', this)">2. Cập nhật Sinh viên (GV)</button>
+    <button class="tab-btn" onclick="switchTab('update-tab', this)">2. Chỉnh sửa thông tin Sinh viên(GV)</button>
+    <button class="tab-btn"onclick="switchTab('import-csv', this)">3. Import CSV </button>
   </div>
 
   <!-- ================= TAB 1: TRA CỨU SINH VIÊN ================= -->
@@ -184,19 +185,36 @@
 
 
         <div class="card" id="topkGroupCard" style="display: none;">
-        <h2 id="topkGroupTitle">Top học bổng theo ngành/khóa</h2>
-        <table class="info-table">
-          <thead>
-            <tr>
-              <th>Hạng</th><th>MSSV</th><th>Họ và Tên</th><th>Ngành</th>
-              <th>GPA 4</th><th>GPA 10</th><th>ĐRL</th>
-            </tr>
-          </thead>
-          <tbody id="topkGroupBody"></tbody>
-        </table>
-      </div>
-
+          <h2 id="topkGroupTitle">Top học bổng theo ngành/khóa</h2>
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Hạng</th><th>MSSV</th><th>Họ và Tên</th><th>Ngành</th>
+                <th>GPA 4</th><th>GPA 10</th><th>ĐRL</th>
+              </tr>
+            </thead>
+            <tbody id="topkGroupBody"></tbody>
+          </table>
+        </div>
       </table>
+
+      <div id="topk-section">
+        <div class="card">
+          <h2>Top học bổng toàn trường</h2>
+          <table class="info-table">
+            <thead>
+              <tr>
+                <th>Hạng</th><th>MSSV</th><th>Họ và Tên</th><th>Ngành</th>
+                <th>GPA 4</th><th>GPA 10</th><th>ĐRL</th>
+              </tr>
+            </thead>
+
+            <tbody id="topkBody">
+              <tr><td colspan="7">Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -250,10 +268,26 @@
             <input type="number" step="0.01" id="up_gpa4" placeholder="VD: 3.55">
           </div>
           <div class="form-group">
+            <label>Có rớt môn không:</label>
+            <select id="up_isNgu">
+              <option value="">Để trống</option>
+              <option value="true">Có rớt</option>
+              <option value="false">Không rớt</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Niên khóa:</label>
+            <input type="text" step="0.01" id="up_cohort" placeholder="VD: K25">
+          </div>
+          <div class="form-group">
             <label>GPA Hệ 10:</label>
             <input type="number" step="0.01" id="up_gpa10" placeholder="VD: 8.85">
           </div>
         </div>
+
 
         <div class="form-group">
           <label>Điểm Rèn Luyện (DRL):</label>
@@ -262,38 +296,72 @@
 
         <button type="button" class="btn-submit" onclick="sendStudentUpdate()">Gửi Cập Nhật</button>
       </form>
+
     </div>
 
     <div class="card">
-      <h2>Nhập từ file sinh CSV</h2>
+      <h2>Xóa thông tin sinh viên</h2>
       <div class="form-group">
         <label>Nhập MSSV:</label>
-        <input type="file" id="csvFile" accept=".csv">
+        <input type="text" 
+               id="searchDeleteMssv" 
+               placeholder="Nhập MSSV (VD: 21110001)..."
+        >
       </div>
-      <button class="btn-submit" onclick="importCSV()">Nhập CSV</button>
+
+      <button
+        type="button"
+        class="btn-submit"
+        onclick="fetchDeleteStudentData()">
+        Xóa
+      </button>
     </div>
 
-  </div>
+    <div class="card" id="studentDeleteResultCard" style="display: none;">
+      <h2>Thông tin Sinh viên bạn muốn xóa</h2>
+      <table class="info-table">
+        <tr><th>Họ và Tên</th><td id="del_res_name">-</td></tr>
+        <tr><th>MSSV</th><td id="del_res_mssv">-</td></tr>
+        <tr><th>Ngành Học</th><td id="del_res_major">-</td></tr>
+        <tr><th>Ngày Sinh</th><td id="del_res_dob">-</td></tr>
+        <tr><th>Giới Tính</th><td id="del_res_gender">-</td></tr>
+        <tr><th>GPA Hệ 4</th><td id="del_res_gpa4">-</td></tr>
+        <tr><th>GPA Hệ 10</th><td id="del_res_gpa10">-</td></tr>
+        <tr><th>Số Tín Chỉ</th><td id="del_res_credit">-</td></tr>
+        <tr><th>Điểm Rèn Luyện (ĐRL)</th><td id="del_res_drl">-</td></tr>
+        <tr><th>Khóa</th><td id="del_res_cohort">-</td></tr>
+        <tr><th>Có rớt môn không</th><td id="del_res_isNgu">-</td></tr>
+      </table>
+      <button
+        type="button"
+        class="btn-submit"
+        onclick="deleteStudent()">
+        Xác nhận Xóa Sinh Viên
+      </button>
+    </div>
 
-  
 
-  <div id="topk-section">
-  <div class="card">
-    <h2>Top học bổng toàn trường</h2>
-    <table class="info-table">
-      <thead>
-        <tr>
-          <th>Hạng</th><th>MSSV</th><th>Họ và Tên</th><th>Ngành</th>
-          <th>GPA 4</th><th>GPA 10</th><th>ĐRL</th>
-        </tr>
-      </thead>
-      <tbody id="topkBody">
-        <tr><td colspan="7">Đang tải...</td></tr>
-      </tbody>
-    </table>
-  </div>
 </div>
-  </div>
+<!-- ==============================import csv --> 
+<div id="import-csv" class="tab-content">
+    <div class="card">
+        <h2>Nhập từ file sinh CSV</h2>
+
+        <div class="form-group">
+            <label>Nhập CSV:</label>
+            <input type="file" id="csvFile" accept=".csv">
+        </div>
+
+        <button class="btn-submit" onclick="importCSV()">
+            Nhập CSV
+        </button>
+    </div>
+</div>
+
+
+</div>   
+  
+</div>
 
   
   <script src="script.js"></script>
