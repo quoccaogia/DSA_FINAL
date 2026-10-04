@@ -279,41 +279,43 @@ async function sendStudentUpdate() {
   }
 }
 
-// ===========================TAB 2: Xóa sinh viên
 async function deleteStudent() {
-  const mssv = deleteMssv;
+    const mssv = deleteMssv;
 
-  if (!mssv) {
-    alert("Vui lòng nhập MSSV để xóa!");
-    return;
-  }
+    if (!mssv) {
+        alert("Vui lòng nhập MSSV để xóa!");
+        return;
+    }
 
-  if (!confirm("Bạn có chắc muốn xóa sinh viên " + mssv + "?")) return;
+    if (!confirm("Bạn có chắc muốn xóa sinh viên " + mssv + "?")) return;
 
-  const payload = {
-    ACTION: "DELETE_STUDENT",
-    MSSV: mssv
-  };
+    const payload = {
+        ACTION: "DELETE_STUDENT",
+        MSSV: mssv
+    };
 
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) throw new Error("Không tìm thấy sinh viên hoặc xóa thất bại.");
-    alert("Đã xóa sinh viên " + mssv + "!");
-  }
-  catch (error) {
-    alert("Lỗi khi xóa: " + error.message);
-    return;
-  }
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error("Không tìm thấy sinh viên hoặc xóa thất bại.");
+        alert("Đã xóa sinh viên " + mssv + "!");
+    } catch (error) {
+        alert("Lỗi khi xóa: " + error.message);
+        return;
+    }
 
-  // Dọn giao diện sau khi xóa
-  document.getElementById('del_mssv').value = "";
-  document.getElementById('studentResultCard').style.display = 'none';
-  document.getElementById('topkGroupCard').style.display = 'none';
-  fetchTopK();
+    // SỬA MỤC 4: Đổi 'del_mssv' thành 'searchDeleteMssv' đúng theo ID trong HTML
+    const searchInput = document.getElementById('searchDeleteMssv');
+    if (searchInput) searchInput.value = "";
+
+    const delCard = document.getElementById('studentDeleteResultCard');
+    if (delCard) delCard.style.display = 'none';
+
+    deleteMssv = "";
+    fetchTopK();
 }
 
 // Nhập CSV

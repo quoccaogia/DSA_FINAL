@@ -2,128 +2,155 @@
 
 using namespace std;
 
-struct Student{
-    private: 
-        string name; //name
-        float gpa_4; //GPA hệ 4
-        float gpa_10;//GPA hệ 10
-        bool gender; //true = nam, false = nữ
-        string dateOfBirth; // string d/month/year sepparator bằng dấu "/"
-        string major; //Tên ngành
-        string cohort; // Tên khóa 
-        string MSSV; //MSSV, "aabbbccc". a = niên khóa, b = ngành, c = stt
-        bool isNgu; //trong kỳ có rớt môn ko? 
-        int credit; //Số tính chỉ
-        int DRL; //Điểm rèn luyện
+struct Student {
+private:
+    string name;        // name
+    float gpa_4;        // GPA hệ 4
+    float gpa_10;       // GPA hệ 10
+    bool gender;        // true = nam, false = nữ
+    string dateOfBirth; // string d/month/year sepparator bằng dấu "/"
+    string major;       // Tên ngành
+    string cohort;      // Tên khóa 
+    string MSSV;        // MSSV, "aabbbccc". a = niên khóa, b = ngành, c = stt
+    bool isNgu;         // trong kỳ có rớt môn ko? 
+    int credit;         // Số tín chỉ
+    int DRL;            // Điểm rèn luyện
 
-    public:
-        Student(string name,
-                float gpa_4, //GPA hệ 4
-                float gpa_10,//GPA hệ 10
-                bool gender, //true = nam, false = nữ
-                string dateOfBirth, // string d/month/year sepparator bằng dấu "/"
-                string major, //Tên ngành
-                string MSSV, //MSSV, "aabbbccc". a = niên khóa, b = ngành, c = stt
-                string cohort, // tên khóa  
-                bool isNgu,//trong kỳ có rớt môn ko? 
-                int credit, //Số tính chỉ
-                int DRL){
-            this->name = name;
-            this->gpa_4 = gpa_4;
-            this->gpa_10 = gpa_10;
-            this->gender = gender;
-            this->dateOfBirth = dateOfBirth;
-            this->major = major;
-			this->cohort = cohort;  
-            this->MSSV = MSSV;
-            this->isNgu = isNgu;
-            this->credit = credit;
-            this->DRL = DRL;
-        }
+    // Bổ sung: 2 biến lưu thứ hạng để tính Top % O(1)
+    int rankSchool = -1;
+    int rankMajor = -1;
 
-        //GETTER
-        string get_Name() const {
-            return name;
-        }
+public:
+    // Đã chuẩn hóa: cohort đứng trước MSSV
+    Student(string name,
+        float gpa_4,
+        float gpa_10,
+        bool gender,
+        string dateOfBirth,
+        string major,
+        string cohort,
+        string MSSV,
+        bool isNgu,
+        int credit,
+        int DRL) {
+        this->name = name;
+        this->gpa_4 = gpa_4;
+        this->gpa_10 = gpa_10;
+        this->gender = gender;
+        this->dateOfBirth = dateOfBirth;
+        this->major = major;
+        this->cohort = cohort;
+        this->MSSV = MSSV;
+        this->isNgu = isNgu;
+        this->credit = credit;
+        this->DRL = DRL;
+        this->rankSchool = -1;
+        this->rankMajor = -1;
+    }
 
-        float get_GPA4() const {
-            return gpa_4;
-        }
+    // ================= GETTER =================
+    string get_Name() const {
+        return name;
+    }
 
-        float get_GPA10() const {
-            return gpa_10;
-        }
+    float get_GPA4() const {
+        return gpa_4;
+    }
 
-        bool get_Gender() const {
-            return gender;
-        }
+    float get_GPA10() const {
+        return gpa_10;
+    }
 
-        string get_DateOfBirth() const {
-            return dateOfBirth;
-        }
-        
-        string get_Cohort() const {
-            return cohort;
-        }   
+    bool get_Gender() const {
+        return gender;
+    }
 
-        string get_Major() const {
-            return major;
-        }
+    string get_DateOfBirth() const {
+        return dateOfBirth;
+    }
 
-        string get_MSSV() const {
-            return MSSV;
-        }
+    string get_Cohort() const {
+        return cohort;
+    }
 
-        bool get_IsNgu() const {
-            return isNgu;
-        }
+    string get_Major() const {
+        return major;
+    }
 
-        int get_Credit() const {
-            return credit;
-        }
+    string get_MSSV() const {
+        return MSSV;
+    }
 
-        int get_DRL() const {
-            return DRL;
-        }
+    bool get_IsNgu() const {
+        return isNgu;
+    }
 
-        //SETTER
-        void set_Name(string value) {
-            name = value;
-        }
+    int get_Credit() const {
+        return credit;
+    }
 
-        void set_GPA4(float value) {
-            gpa_4 = value;
-        }
+    int get_DRL() const {
+        return DRL;
+    }
 
-        void set_GPA10(float value) {
-            gpa_10 = value;
-        }
+    int get_RankSchool() const {
+        return rankSchool;
+    }
 
-        void set_Gender(bool value) {
-            gender = value;
-        }
+    int get_RankMajor() const {
+        return rankMajor;
+    }
 
-        void set_DateOfBirth(string value) {
-            dateOfBirth = value;
-        }
+    // ================= SETTER =================
+    void set_Name(string value) {
+        name = value;
+    }
 
-        void set_Major(string value) {
-            major = value;
-        }
-        void set_Cohort(const string& value) {
-            cohort = value;
-        }
+    void set_GPA4(float value) {
+        gpa_4 = value;
+    }
 
-        void set_IsNgu(bool value) {
-            isNgu = value;
-        }
+    void set_GPA10(float value) {
+        gpa_10 = value;
+    }
 
-        void set_Credit(int value) {
-            credit = value;
-        }
+    void set_Gender(bool value) {
+        gender = value;
+    }
 
-        void set_DRL(int value) {
-            DRL = value;
-        }
+    void set_DateOfBirth(string value) {
+        dateOfBirth = value;
+    }
 
+    void set_Major(string value) {
+        major = value;
+    }
+
+    void set_Cohort(const string& value) {
+        cohort = value;
+    }
+
+    void set_MSSV(const string& value) {
+        MSSV = value;
+    }
+
+    void set_IsNgu(bool value) {
+        isNgu = value;
+    }
+
+    void set_Credit(int value) {
+        credit = value;
+    }
+
+    void set_DRL(int value) {
+        DRL = value;
+    }
+
+    void set_RankSchool(int r) {
+        rankSchool = r;
+    }
+
+    void set_RankMajor(int r) {
+        rankMajor = r;
+    }
 };
