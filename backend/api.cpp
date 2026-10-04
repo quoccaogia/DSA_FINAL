@@ -221,6 +221,26 @@ int main() {
 
             res.set_content(responsePayload.dump(), "application/json");
         }
+
+        else if(action == "ADD_STUDENT"){
+            Student* student = new Student(payload["name"].get<string>(),
+                                           payload["gpa_4"].get<float>(),
+                                           payload["gpa_10"].get<float>(),
+                                           payload["gender"].get<bool>(),
+                                           payload["dateOfBirth"].get<string>(),
+                                           payload["major"].get<string>(),
+                                           payload["MSSV"].get<string>(),
+                                           payload["cohort"].get<string>(),
+                                           payload["isNgu"].get<bool>(),
+                                           payload["credit"].get<int>(),
+                                           payload["DRL"].get<int>()); 
+            
+            system.addStudent(student);
+            database.saveStudent(student);
+
+
+            
+        }
     });
 
     server.set_default_headers({

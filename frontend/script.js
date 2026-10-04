@@ -107,8 +107,9 @@ async function fetchTopKGroup(major, cohort) {
 
   console.log("fetchTopKGroup END");
 }
-let deleteMssv = "";
+
 //======= fetchDeleteStudentData
+let deleteMssv = "";
 async function fetchDeleteStudentData(){
   const searchEl = document.getElementById('searchDeleteMssv');
   if (!searchEl) return;
@@ -175,7 +176,6 @@ async function fetchDeleteStudentData(){
   setField('del_res_drl', data.DRL ?? "Chưa có (null)");
 
 }
-
 
 // ================================TAB 1: Tra cứu thông tin sinh viên
 async function fetchStudentData() {
@@ -260,7 +260,9 @@ async function sendStudentUpdate() {
     credit: getValueOrNull('up_credit', 'int'),
     gpa_4: getValueOrNull('up_gpa4', 'float'),
     gpa_10: getValueOrNull('up_gpa10', 'float'),
-    DRL: getValueOrNull('up_drl', 'int')
+    DRL: getValueOrNull('up_drl', 'int'),
+    cohort: getValueOrNull('up_cohort', 'string'),
+    isNgu: getValueOrNull('up_isNgu', 'bool'),
   };
 
   try {
@@ -313,7 +315,6 @@ async function deleteStudent() {
   document.getElementById('topkGroupCard').style.display = 'none';
   fetchTopK();
 }
-
 
 // Nhập CSV
 async function importCSV() {
@@ -447,5 +448,59 @@ async function fetchTopK() {
   });
 }
 
+// ============= add student
+async function addStudent(){
+  const requiredFields = [
+        'add_mssv',
+        'add_name',
+        'add_major',
+        'add_dob',
+        'add_gender',
+        'add_credit',
+        'add_gpa4',
+        'add_gpa10',
+        'add_drl'
+    ];
+
+  for (const id of requiredFields) {
+      const el = document.getElementById(id);
+
+      if (!el || el.value.trim() === "") {
+          alert("Vui lòng nhập đầy đủ thông tin!");
+          el?.focus();
+          return;
+      }
+  }
+
+  const payload = {
+    ACTION: "ADD_STUDENT",
+    MSSV: document.getElementById('add_mssv').value.trim(),
+    name: document.getElementById('add_name').value.trim(),
+    major: document.getElementById('add_major').value.trim(),
+    dateOfBirth: document.getElementById('add_dob').value.trim(),
+    gender: document.getElementById('add_gender').value === "true",
+    credit: Number(document.getElementById('add_credit').value),
+    gpa_4: Number(document.getElementById('add_gpa4').value),
+    gpa_10: Number(document.getElementById('add_gpa10').value),
+    DRL: Number(document.getElementById('add_drl').value),
+    cohort: document.getElementById('add_cohort').value.trim(),
+    isNgu: document.getElementById('add_isNgu').value === "true"
+  };
+
+  try {
+    console.log(JSON.stringify(payload, null, 2));
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw new Error("Cập nhật thất bại.");
+    alert("Cập nhật thành công!");
+  } 
+  catch (error) {
+    alert("Lỗi khi gửi dữ liệu: " + error.message);
+  }
+
+}
 // Tự chạy khi mở trang
 fetchTopK();

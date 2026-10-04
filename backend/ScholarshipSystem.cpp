@@ -97,6 +97,10 @@ public:
         if (!data["DRL"].is_null()){
             student->set_DRL(data["DRL"].get<int>());
         }
+
+        if(!data["isNgu"].is_null()){
+            student->set_IsNgu(data["isNgu"].get<bool>());
+        }
         
 
         //Cập nhật lại index

@@ -288,7 +288,6 @@
           </div>
         </div>
 
-
         <div class="form-group">
           <label>Điểm Rèn Luyện (DRL):</label>
           <input type="number" id="up_drl" placeholder="VD: 90">
@@ -345,7 +344,7 @@
 <!-- ==============================import csv --> 
 <div id="import-csv" class="tab-content">
     <div class="card">
-        <h2>Nhập từ file sinh CSV</h2>
+        <h2>Nhập sinh viên</h2>
 
         <div class="form-group">
             <label>Nhập CSV:</label>
@@ -355,7 +354,86 @@
         <button class="btn-submit" onclick="importCSV()">
             Nhập CSV
         </button>
+   
     </div>
+
+    <div class="card">
+      <h2>Thêm sinh viên</h2>
+
+      <form id="addForm">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>MSSV (String):</label>
+            <input type="text" id="add_mssv" placeholder="VD: 21110001" required>
+          </div>
+          <div class="form-group">
+            <label>Họ và Tên (String):</label>
+            <input type="text" id="add_name" placeholder="VD: Nguyễn Văn A" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Ngành Học (String):</label>
+            <input type="text" id="add_major" placeholder="VD: Công nghệ thông tin" required>
+          </div>
+          <div class="form-group">
+            <label>Ngày Sinh (d/month/year):</label>
+            <input type="text" id="add_dob" placeholder="VD: 15/08/2003" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Giới Tính:</label>
+            <select id="add_gender">
+              <option value="" selected disabled>-- Chọn giới tính --</option>
+              <option value="true">Nam</option>
+              <option value="false">Nữ</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Số Tín Chỉ:</label>
+            <input type="number" id="add_credit" placeholder="VD: 120" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>GPA Hệ 4:</label>
+            <input type="number" step="0.01" id="add_gpa4" placeholder="VD: 3.55" required>
+          </div>
+          <div class="form-group">
+            <label>Có rớt môn không:</label>
+            <select id="add_isNgu">
+              <option value="" selected disabled>-- Chọn tình trạng học tập --</option>
+              <option value="true">Có rớt</option>
+              <option value="false">Không rớt</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Niên khóa:</label>
+            <input type="text" step="0.01" id="add_cohort" placeholder="VD: K25" required>
+          </div>
+          <div class="form-group">
+            <label>GPA Hệ 10:</label>
+            <input type="number" step="0.01" id="add_gpa10" placeholder="VD: 8.85" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Điểm Rèn Luyện (DRL):</label>
+          <input type="number" id="add_drl" placeholder="VD: 90" required>
+        </div>
+
+        <button type="button" class="btn-submit" onclick="addStudent()">Gửi Cập Nhật</button>
+      </form>
+
+    </div>
+
 </div>
 
 
