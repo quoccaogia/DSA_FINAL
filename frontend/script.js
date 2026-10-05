@@ -172,7 +172,7 @@ async function fetchDeleteStudentData(){
   setField('del_res_gpa10', data.gpa_10 ?? "Chưa có (null)");
   setField('del_res_credit', data.credit ?? "Chưa có (null)");
   setField('del_res_cohort', data.cohort ?? "Chưa có (null)");
-  setField('del_res_isNgu', data.isNgu === true ? "Có rớt" : (data.gender === false ? "Không rớt" : "Chưa có (null)"));
+  setField('del_res_isNgu', data.isNgu === true ? "Có rớt" : (data.isNgu === false ? "Không rớt" : "Chưa có (null)"));
   setField('del_res_drl', data.DRL ?? "Chưa có (null)");
 
 }
@@ -277,6 +277,9 @@ async function sendStudentUpdate() {
   catch (error) {
     alert("Lỗi khi gửi dữ liệu: " + error.message);
   }
+
+  //Refesh bảng top K
+  fetchTopK();
 }
 
 async function deleteStudent() {
@@ -461,7 +464,9 @@ async function addStudent(){
         'add_credit',
         'add_gpa4',
         'add_gpa10',
-        'add_drl'
+        'add_drl',
+        'add_cohort',
+        'add_isNgu'
     ];
 
   for (const id of requiredFields) {
@@ -503,6 +508,8 @@ async function addStudent(){
     alert("Lỗi khi gửi dữ liệu: " + error.message);
   }
 
+  //Refesh bảng topK
+  fetchTopK();
 }
 // Tự chạy khi mở trang
 fetchTopK();
