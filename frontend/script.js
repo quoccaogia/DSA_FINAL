@@ -1,5 +1,12 @@
 const API_URL = "http://localhost:8080/api/student";
 
+const showGPA = (p) => {
+  if (p === undefined || p === null) return "-";
+  
+  return p.toFixed(2);
+};
+
+
 // Chuyển đổi Tab giao diện
 function switchTab(tabId, element) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -33,7 +40,7 @@ function getValueOrNull(elementId, type = 'string') {
   return val;
 }
 
-// ===========================Top học bổng theo ngành/khóa (hiện sau khi tra cứu)
+//Top học bổng theo ngành/khóa (hiện sau khi tra cứu)
 async function fetchTopKGroup(major, cohort) {
   console.log("fetchTopKGroup CALLED:", major, cohort);
 
@@ -96,8 +103,8 @@ async function fetchTopKGroup(major, cohort) {
       sv.MSSV ?? sv.mssv,
       sv.name,
       sv.major,
-      sv.gpa_4,
-      sv.gpa_10,
+      showGPA(sv.gpa_4),
+      showGPA(sv.gpa_10),
       sv.DRL ?? sv.drl
     ];
     values.forEach(v => {
@@ -108,7 +115,7 @@ async function fetchTopKGroup(major, cohort) {
   console.log("fetchTopKGroup END");
 }
 
-//======= fetchDeleteStudentData
+//fetchDeleteStudentData
 let deleteMssv = "";
 async function fetchDeleteStudentData(){
   const searchEl = document.getElementById('searchDeleteMssv');
@@ -227,8 +234,8 @@ async function fetchStudentData() {
   setField('res_major', data.major ?? "Chưa có (null)");
   setField('res_dob', data.dateOfBirth ?? "Chưa có (null)");
   setField('res_gender', data.gender === true ? "Nam" : (data.gender === false ? "Nữ" : "Chưa có (null)"));
-  setField('res_gpa4', data.gpa_4 ?? "Chưa có (null)");
-  setField('res_gpa10', data.gpa_10 ?? "Chưa có (null)");
+  setField('res_gpa4', showGPA(data.gpa_4) ?? "Chưa có (null)");
+  setField('res_gpa10', showGPA(data.gpa_10) ?? "Chưa có (null)");
   setField('res_credit', data.credit ?? "Chưa có (null)");
   setField('res_drl', data.DRL ?? "Chưa có (null)");
 
@@ -443,8 +450,8 @@ async function fetchTopK() {
       sv.MSSV ?? sv.mssv,
       sv.name,
       sv.major,
-      sv.gpa_4,
-      sv.gpa_10,
+      showGPA(sv.gpa_4),
+      showGPA(sv.gpa_10),
       sv.DRL ?? sv.drl
     ];
     values.forEach(v => {
