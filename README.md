@@ -2,7 +2,7 @@
 
 ##### Bước 1:
     Mở terminal (powershell gì gì đó)
-    cd tới root của repo
+    cd tới backend
 ##### Bước 2:
     Nếu có sẵn test data (lưu dưới dạng scholarship.db) thì nhét vô root repo.
     Không thì chạy chương trình rồi nhạp dữ liệu vào.
