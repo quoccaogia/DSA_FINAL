@@ -142,6 +142,7 @@ async function fetchDeleteStudentData(){
       body: JSON.stringify(payload)
     });
 
+
     if (!response.ok) throw new Error("Không thể lấy dữ liệu.");
     const raw = await response.text();
 
@@ -210,6 +211,12 @@ async function fetchStudentData() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
+
+    if (response.status === 404) {
+      alert("Không tìm thấy sinh viên có MSSV " + mssv + ".");
+    return;
+  }
+
 
     if (!response.ok) throw new Error("Không thể lấy dữ liệu.");
     data = await response.json();
