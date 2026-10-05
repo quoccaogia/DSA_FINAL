@@ -46,22 +46,44 @@ public:
 
         if (!student) return;
 
+        // Nếu add trùng SV. VD: mssv = 21 là 1 sinhvien (sv1). 
+        // Add sv2 có mssv = 21 -> đè lên sv1 cũ
+        // Nếu đã tồn tại sv có mssv như student muốn add vào thì xử lý 
 
+        auto it = studentMap.find(student->get_MSSV());
+
+        if (it != studentMap.end()) { //Có sinh viên trùng MSSV
+            Student* oldStudent = it->second;
+
+            // Xóa khỏi ranking toàn trường
+            allSchoolPriority.erase(oldStudent);
+
+            // Xóa khỏi index ngành + khóa
+            string oldKey =
+                oldStudent->get_Major() + "_" + oldStudent->get_Cohort();
+
+            auto indexIt = majorCohortIndex.find(oldKey);
+
+            if (indexIt != majorCohortIndex.end()) {
+                indexIt->second.erase(oldStudent);
+
+                if (indexIt->second.empty())
+                    majorCohortIndex.erase(indexIt);
+            }
+
+            // Xóa object cũ
+            delete oldStudent;
+        }
 
         // Lưu vào Hash Table chính
-
         studentMap[student->get_MSSV()] = student;
-
-
-
+        
         // Nếu sinh viên đủ điều kiện xét học bổng (không rớt môn)
-
         if (!student->get_IsNgu()) {
 
             // Đưa vào set toàn trường
 
             allSchoolPriority.insert(student);
-
 
 
             // Đưa vào Index phụ theo Ngành và Khóa
